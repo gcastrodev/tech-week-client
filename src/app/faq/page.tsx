@@ -28,7 +28,7 @@ const faq = [
   },
   {
     q: "Onde acontece o evento?",
-    a: "Na UniCesumar Londrina — Av. Guedner, 1610, Jardim Aclimação, Londrina - PR.",
+    a: "Na UniCesumar Londrina — Av. Santa Mônica, 450, Londrina - PR.",
   },
   {
     q: "Vou receber certificado?",

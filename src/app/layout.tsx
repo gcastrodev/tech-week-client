@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme-provider"
+import { SmoothScroll } from "@/components/smooth-scroll"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,11 +26,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
-      <body className="min-h-full flex flex-col">
+    <html lang="pt-BR" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`} suppressHydrationWarning>
+      <body className="noise-overlay bg-tech-mesh min-h-full flex flex-col">
         <ThemeProvider>
-          {children}
-          <Toaster richColors position="top-right" />
+          <SmoothScroll>
+            <div className="relative z-[2] flex min-h-full flex-1 flex-col">
+              {children}
+              <Toaster richColors position="top-right" />
+            </div>
+          </SmoothScroll>
         </ThemeProvider>
       </body>
     </html>

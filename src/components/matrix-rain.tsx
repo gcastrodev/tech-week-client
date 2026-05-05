@@ -23,7 +23,7 @@ export function MatrixRain() {
     const drops: number[] = Array(cols).fill(0).map(() => Math.random() * -100)
 
     const draw = () => {
-      ctx.fillStyle = "rgba(10, 15, 10, 0.05)"
+      ctx.fillStyle = "rgba(10, 16, 31, 0.06)"
       ctx.fillRect(0, 0, canvas.width, canvas.height)
       ctx.font = "11px monospace"
 
@@ -50,9 +50,14 @@ export function MatrixRain() {
   }, [])
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full opacity-15 pointer-events-none"
-    />
+    <div
+      className="pointer-events-none absolute inset-0 h-full w-full"
+      aria-hidden
+    >
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 h-full w-full opacity-[0.22]"
+      />
+    </div>
   )
 }
