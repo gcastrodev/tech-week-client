@@ -4,7 +4,8 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import { Menu, X, Sun, Moon } from "lucide-react"
+import { useTheme } from "@/components/theme-provider"
 
 const links = [
   { href: "/", label: "Início" },
@@ -17,13 +18,14 @@ const links = [
 export function Navbar() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const { theme, toggle } = useTheme()
 
   return (
     <header className="sticky top-0 z-50 bg-background/80 backdrop-blur border-b border-border">
       <nav className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
-          <span className="bg-brand text-white text-xs font-bold px-2 py-1 rounded">TW</span>
-          <span>Tech Week</span>
+          <span className="bg-neon text-black text-xs font-bold px-2 py-1 rounded font-mono">TW</span>
+          <span className="font-mono">Tech<span className="text-neon">_</span>Week</span>
         </Link>
 
         <ul className="hidden md:flex items-center gap-1">
@@ -32,25 +34,35 @@ export function Navbar() {
               <Link
                 href={l.href}
                 className={cn(
-                  "px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
+                  "px-3 py-1.5 rounded-md text-sm font-medium transition-colors font-mono",
                   pathname === l.href
-                    ? "bg-brand text-white"
+                    ? "text-neon border border-neon bg-neon-muted"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
-                {l.label}
+                {l.href === pathname ? "> " : ""}{l.label}
               </Link>
             </li>
           ))}
         </ul>
 
-        <button
-          className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground"
-          onClick={() => setOpen(!open)}
-          aria-label="Menu"
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggle}
+            className="p-2 rounded-md text-muted-foreground hover:text-neon hover:bg-neon-muted transition-colors"
+            aria-label="Alternar tema"
+          >
+            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+
+          <button
+            className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground"
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </nav>
 
       {open && (
@@ -61,13 +73,13 @@ export function Navbar() {
               href={l.href}
               onClick={() => setOpen(false)}
               className={cn(
-                "px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                "px-3 py-2 rounded-md text-sm font-medium transition-colors font-mono",
                 pathname === l.href
-                  ? "bg-brand text-white"
+                  ? "text-neon border border-neon bg-neon-muted"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               )}
             >
-              {l.label}
+              {l.href === pathname ? "> " : ""}{l.label}
             </Link>
           ))}
         </div>
