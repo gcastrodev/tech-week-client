@@ -30,12 +30,13 @@ import type {
     }
   
     const text = await res.text()
-    return text ? JSON.parse(text) : {}
+    return (text ? JSON.parse(text) : undefined) as T
   }
   
-  function authHeaders() {
+  function authHeaders(): Record<string, string> {
     const token = getToken()
-    return token ? { Authorization: `Bearer ${token}` } : {}
+    if (!token) return {}
+    return { Authorization: `Bearer ${token}` }
   }
   
   export async function postRegistration(data: RegistrationPayload) {
