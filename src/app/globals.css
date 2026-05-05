@@ -5,25 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-geist-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -36,92 +21,56 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-neon: var(--neon);
+  --color-neon-muted: var(--neon-muted);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-  --color-brand: var(--brand);
-  --color-brand-foreground: var(--brand-foreground);
-  --color-brand-muted: var(--brand-muted);
 }
 
 :root {
-  --brand: oklch(0.45 0.15 145);
-  --brand-foreground: oklch(0.98 0 0);
-  --brand-muted: oklch(0.92 0.04 145);
+  --neon: #00ff88;
+  --neon-muted: rgba(0, 255, 136, 0.15);
 
-  --background: oklch(0.98 0 0);
-  --foreground: oklch(0.13 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.13 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.13 0 0);
-  --primary: oklch(0.45 0.15 145);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.96 0.02 145);
-  --secondary-foreground: oklch(0.3 0.08 145);
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.5 0 0);
-  --accent: oklch(0.65 0.18 55);
-  --accent-foreground: oklch(0.13 0 0);
+  --background: #f4f6f4;
+  --foreground: #0d120d;
+  --card: #ffffff;
+  --card-foreground: #0d120d;
+  --primary: #00cc66;
+  --primary-foreground: #0a0f0a;
+  --secondary: #e8f5ee;
+  --secondary-foreground: #0d3320;
+  --muted: #e8ede8;
+  --muted-foreground: #556655;
+  --accent: #0066cc;
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.9 0.01 145);
-  --input: oklch(0.9 0.01 145);
-  --ring: oklch(0.45 0.15 145);
-  --chart-1: oklch(0.45 0.15 145);
-  --chart-2: oklch(0.65 0.18 55);
-  --chart-3: oklch(0.6 0.12 200);
-  --chart-4: oklch(0.7 0.1 300);
-  --chart-5: oklch(0.5 0.1 30);
+  --border: rgba(0, 0, 0, 0.08);
+  --input: rgba(0, 0, 0, 0.06);
+  --ring: #00cc66;
   --radius: 0.625rem;
-  --sidebar: oklch(0.97 0.01 145);
-  --sidebar-foreground: oklch(0.13 0 0);
-  --sidebar-primary: oklch(0.45 0.15 145);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.92 0.04 145);
-  --sidebar-accent-foreground: oklch(0.3 0.08 145);
-  --sidebar-border: oklch(0.88 0.02 145);
-  --sidebar-ring: oklch(0.45 0.15 145);
 }
 
 .dark {
-  --brand: oklch(0.6 0.15 145);
-  --brand-foreground: oklch(0.13 0 0);
-  --brand-muted: oklch(0.25 0.06 145);
-
-  --background: oklch(0.1 0.01 145);
-  --foreground: oklch(0.97 0 0);
-  --card: oklch(0.14 0.015 145);
-  --card-foreground: oklch(0.97 0 0);
-  --popover: oklch(0.14 0.015 145);
-  --popover-foreground: oklch(0.97 0 0);
-  --primary: oklch(0.6 0.15 145);
-  --primary-foreground: oklch(0.1 0 0);
-  --secondary: oklch(0.2 0.04 145);
-  --secondary-foreground: oklch(0.97 0 0);
-  --muted: oklch(0.2 0.02 145);
-  --muted-foreground: oklch(0.6 0 0);
-  --accent: oklch(0.7 0.18 55);
-  --accent-foreground: oklch(0.1 0 0);
+  --background: #0a0f0a;
+  --foreground: #e0ffe0;
+  --card: #0d140d;
+  --card-foreground: #e0ffe0;
+  --primary: #00ff88;
+  --primary-foreground: #0a0f0a;
+  --secondary: #0d1a0d;
+  --secondary-foreground: #a0d0a0;
+  --muted: #111a11;
+  --muted-foreground: #4a6a4a;
+  --accent: #0066cc;
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.6 0.15 145);
-  --sidebar: oklch(0.14 0.015 145);
-  --sidebar-foreground: oklch(0.97 0 0);
-  --sidebar-primary: oklch(0.6 0.15 145);
-  --sidebar-primary-foreground: oklch(0.1 0 0);
-  --sidebar-accent: oklch(0.2 0.04 145);
-  --sidebar-accent-foreground: oklch(0.97 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.6 0.15 145);
+  --border: rgba(0, 255, 136, 0.1);
+  --input: rgba(0, 255, 136, 0.06);
+  --ring: #00ff88;
 }
 
 @layer base {
@@ -133,12 +82,49 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
 }
 
 @layer utilities {
-  .bg-brand { background-color: var(--brand); }
-  .text-brand { color: var(--brand); }
-  .border-brand { border-color: var(--brand); }
-  .bg-brand-muted { background-color: var(--brand-muted); }
-} 
+  .text-neon { color: var(--neon); }
+  .bg-neon { background-color: var(--neon); }
+  .border-neon { border-color: var(--neon); }
+  .bg-neon-muted { background-color: var(--neon-muted); }
+  .glow { text-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
+}
+
+@keyframes matrix-fall {
+  0% { transform: translateY(-100%); opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-blink {
+  animation: blink 1s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--neon);
+  border-radius: 3px;
+  opacity: 0.5;
+}
