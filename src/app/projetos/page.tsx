@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { InnerPageShell, InnerPageSuccess } from "@/components/inner-page-shell"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,8 +17,8 @@ export default function ProjetosPage() {
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [form, setForm] = useState({
-    name: "",
-    student_registration: "",
+    submitter_name: "",
+    submitter_registration: "",
     project_name: "",
     description: "",
   })
@@ -29,13 +30,18 @@ export default function ProjetosPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    const ra = Number(form.student_registration)
-    if (!form.name || !form.student_registration || !form.project_name || !form.description) {
+    const ra = Number(form.submitter_registration)
+    if (
+      !form.submitter_name ||
+      !form.submitter_registration ||
+      !form.project_name ||
+      !form.description
+    ) {
       toast.error("Preencha todos os campos.")
       return
     }
-    if (isNaN(ra) || form.student_registration.length > 9) {
-      toast.error("RA inválido.")
+    if (isNaN(ra) || ra < 100000000 || ra > 999999999) {
+      toast.error("RA deve ter exatamente 9 dígitos.")
       return
     }
     if (form.description.length > 500) {
@@ -44,8 +50,8 @@ export default function ProjetosPage() {
     }
 
     const payload: ProjectPayload = {
-      name: form.name,
-      student_registration: ra,
+      submitter_name: form.submitter_name,
+      submitter_registration: ra,
       project_name: form.project_name,
       description: form.description,
     }
@@ -71,15 +77,12 @@ export default function ProjetosPage() {
     return (
       <>
         <Navbar />
-        <main className="flex-1 flex items-center justify-center px-4 py-24">
-          <div className="text-center flex flex-col items-center gap-4">
-            <CheckCircle className="text-brand" size={64} />
-            <h1 className="text-3xl font-bold">Projeto submetido!</h1>
-            <p className="text-muted-foreground max-w-sm">
-              Seu projeto está aguardando aprovação da coordenação.
-            </p>
-          </div>
-        </main>
+        <InnerPageSuccess
+          title="Projeto submetido!"
+          description="Seu projeto está aguardando aprovação da coordenação."
+        >
+          <CheckCircle className="mx-auto text-neon" size={72} strokeWidth={1.75} />
+        </InnerPageSuccess>
         <Footer />
       </>
     )
@@ -88,83 +91,99 @@ export default function ProjetosPage() {
   return (
     <>
       <Navbar />
-      <main className="flex-1 py-16 px-4">
-        <div className="max-w-lg mx-auto">
-          <h1 className="text-4xl font-bold mb-2">Projetos de IA</h1>
-          <p className="text-muted-foreground mb-2">
-            Tem um projeto de Inteligência Artificial? Submeta aqui para ser apresentado na Tech Week.
-          </p>
-          <p className="text-sm text-muted-foreground bg-muted/60 border border-border rounded-lg px-4 py-3 mb-8">
-            Os projetos passam por aprovação da coordenação antes de serem confirmados no evento.
-          </p>
-          <Card>
-            <CardHeader>
-              <CardTitle>Dados do projeto</CardTitle>
-              <CardDescription>Todos os campos são obrigatórios.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="space-y-1.5">
-                  <Label htmlFor="name">Seu nome completo</Label>
-                  <Input
-                    id="name"
-                    placeholder="Nome do aluno responsável"
-                    value={form.name}
-                    onChange={(e) => set("name", e.target.value)}
-                    maxLength={255}
-                    required
-                  />
-                </div>
+      <InnerPageShell
+        title="Projetos de IA"
+        description={
+          <>
+            <p className="mb-4">
+              Tem um projeto de Inteligência Artificial? Submeta aqui para ser apresentado na Tech
+              Week.
+            </p>
+            <p className="rounded-xl border border-border/80 bg-muted/40 px-4 py-3 text-sm md:text-base">
+              Os projetos passam por aprovação da coordenação antes de serem confirmados no evento.
+            </p>
+          </>
+        }
+      >
+        <Card className="border border-cyan-500/20 bg-card/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,0.65)] backdrop-blur-md">
+          <CardHeader>
+            <CardTitle className="font-mono text-xl">Dados do projeto</CardTitle>
+            <CardDescription>Todos os campos são obrigatórios.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-1.5">
+                <Label htmlFor="submitter_name">Seu nome completo</Label>
+                <Input
+                  id="submitter_name"
+                  placeholder="Nome do aluno responsável"
+                  value={form.submitter_name}
+                  onChange={(e) => set("submitter_name", e.target.value)}
+                  maxLength={255}
+                  required
+                />
+              </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="ra">RA</Label>
-                  <Input
-                    id="ra"
-                    placeholder="Ex: 123456789"
-                    value={form.student_registration}
-                    onChange={(e) => set("student_registration", e.target.value.replace(/\D/g, "").slice(0, 9))}
-                    inputMode="numeric"
-                    required
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="ra">RA</Label>
+                <Input
+                  id="ra"
+                  placeholder="Ex: 123456789"
+                  value={form.submitter_registration}
+                  onChange={(e) =>
+                    set("submitter_registration", e.target.value.replace(/\D/g, "").slice(0, 9))
+                  }
+                  inputMode="numeric"
+                  required
+                />
+              </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="project_name">Nome do projeto</Label>
-                  <Input
-                    id="project_name"
-                    placeholder="Ex: AgroIA — Detecção de pragas"
-                    value={form.project_name}
-                    onChange={(e) => set("project_name", e.target.value)}
-                    maxLength={255}
-                    required
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="project_name">Nome do projeto</Label>
+                <Input
+                  id="project_name"
+                  placeholder="Ex: AgroIA — Detecção de pragas"
+                  value={form.project_name}
+                  onChange={(e) => set("project_name", e.target.value)}
+                  maxLength={255}
+                  required
+                />
+              </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="description">
-                    Descrição{" "}
-                    <span className="text-muted-foreground font-normal">
-                      ({form.description.length}/500)
-                    </span>
-                  </Label>
-                  <textarea
-                    id="description"
-                    className="w-full border border-input rounded-md bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring min-h-[120px] resize-y"
-                    placeholder="Descreva brevemente o que o projeto faz e qual problema resolve..."
-                    value={form.description}
-                    onChange={(e) => set("description", e.target.value.slice(0, 500))}
-                    required
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="description">
+                  Descrição{" "}
+                  <span className="font-normal text-muted-foreground">
+                    ({form.description.length}/500)
+                  </span>
+                </Label>
+                <textarea
+                  id="description"
+                  className="min-h-[120px] w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="Descreva brevemente o que o projeto faz e qual problema resolve..."
+                  value={form.description}
+                  onChange={(e) => set("description", e.target.value.slice(0, 500))}
+                  required
+                />
+              </div>
 
-                <Button type="submit" className="w-full bg-brand hover:bg-brand/90 text-white font-semibold" disabled={loading}>
-                  {loading ? <><Loader2 size={16} className="animate-spin mr-2" /> Enviando...</> : "Submeter projeto"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+              <Button
+                type="submit"
+                className="w-full bg-neon font-mono font-semibold text-black hover:bg-neon/90"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={16} className="mr-2 animate-spin" /> Enviando...
+                  </>
+                ) : (
+                  "Submeter projeto"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </InnerPageShell>
       <Footer />
     </>
   )

@@ -3,10 +3,10 @@ export const EVENT = {
   name: "TECH WEEK",
   fullTitle: "II TECH WEEK",
   theme:
-    "Inteligência Artificial em ação: Dados, Inovação e Transformação Digital",
+    "Três dias imersos no futuro. Palestras com referências da indústria, submissão de projetos de alunos e muita troca de conhecimento sobre IA.",
   hashtag: "#TechWeek",
   dates: {
-    labelShort: "01, 02 e 03 de junho de 2026",
+    labelShort: "01 — 03 de junho de 2026",
     labelLong: "1º, 2 e 3 de junho de 2026",
     year: 2026,
   },
@@ -33,7 +33,6 @@ export const ASSETS = {
 export type ScheduleType = "geral" | "palestra" | "coffee"
 
 export type ScheduleBlock = {
-  time: string
   title: string
   type: ScheduleType
 }
@@ -42,51 +41,56 @@ export type DaySchedule = {
   id: string
   dateLabel: string
   weekday: string
+  /** Início e fim do dia de evento (sem grade horária detalhada). */
+  dayRange: string
   blocks: ScheduleBlock[]
 }
 
-/** Grade alinhada ao flyer: três noites, 19h–22h, palestras de 60 min — títulos quando confirmados. */
+/** Três dias · apenas intervalo diário; conteúdo por dia conforme programação oficial. */
 export const scheduleByDay: DaySchedule[] = [
   {
     id: "jun1",
     dateLabel: "01/06",
     weekday: "Segunda-feira",
+    dayRange: "19:00 – 22:00",
     blocks: [
-      { time: "19:00", title: "Abertura e recepção", type: "geral" },
+      { title: "Abertura oficial do evento", type: "geral" },
+      { title: "Networking", type: "geral" },
       {
-        time: "19:30",
-        title: "Palestras (60 min cada) — programação detalhada em breve",
+        title: "Apresentação dos projetos dos alunos — tema Inteligência Artificial",
         type: "palestra",
       },
-      { time: "22:00", title: "Encerramento da noite", type: "geral" },
+      { title: "Coffee break", type: "coffee" },
     ],
   },
   {
     id: "jun2",
     dateLabel: "02/06",
     weekday: "Terça-feira",
+    dayRange: "19:00 – 22:00",
     blocks: [
-      { time: "19:00", title: "Credenciamento", type: "geral" },
+      { title: "Networking", type: "geral" },
       {
-        time: "19:30",
-        title: "Palestras (60 min cada) — programação detalhada em breve",
+        title:
+          "Palestras com profissionais e empresários do meio tecnológico — programação detalhada em breve",
         type: "palestra",
       },
-      { time: "22:00", title: "Encerramento da noite", type: "geral" },
+      { title: "Coffee break", type: "coffee" },
     ],
   },
   {
     id: "jun3",
     dateLabel: "03/06",
     weekday: "Quarta-feira",
+    dayRange: "19:00 – 22:00",
     blocks: [
-      { time: "19:00", title: "Credenciamento", type: "geral" },
+      { title: "Networking", type: "geral" },
       {
-        time: "19:30",
-        title: "Palestras (60 min cada) — programação detalhada em breve",
+        title:
+          "Palestras com profissionais e empresários do meio tecnológico — programação detalhada em breve",
         type: "palestra",
       },
-      { time: "22:00", title: "Encerramento da noite", type: "geral" },
+      { title: "Coffee break", type: "coffee" },
     ],
   },
 ]
@@ -101,32 +105,58 @@ export type Sponsor = {
   href?: string
 }
 
-/** Patrocinadores confirmados; amplie a lista quando fechar novas parcerias. */
+/** Patrocinadores — inclua o arquivo em /public/sponsors quando disponível. */
 export const sponsors: Sponsor[] = [
+  {
+    name: "Adilson",
+    tier: "apoio",
+    logoSrc: "/sponsors/adilson.png",
+    logoAlt: "Logo Adilson",
+  },
+  {
+    name: "Vitório's Restaurante",
+    tier: "apoio",
+    logoSrc: undefined,
+    logoAlt: "Vitório's Restaurante",
+  },
   {
     name: "CACO Alimentação",
     tier: "apoio",
     logoSrc: "/sponsors/caco.png",
     logoAlt: "Logo CACO Alimentação",
-    href: undefined,
   },
 ]
 
-/** Prévia opcional na home; site completo de palestrantes ficará em URL separada. */
+/** Prévia na home — hub completo em página dedicada. */
 export const speakerPreview = [
   {
     name: "A confirmar",
     role: "Palestrante",
-    bio: "Os nomes e temas serão divulgados em breve. A versão completa do hub de palestrantes ficará em outro site.",
+    bio: "Os nomes e temas serão divulgados em breve.",
   },
   {
     name: "A confirmar",
     role: "Palestrante",
-    bio: "Fique de olho nas redes da organização para novidades.",
+    bio: "Acompanhe as redes da organização para novidades.",
   },
   {
     name: "A confirmar",
     role: "Palestrante",
-    bio: "Inscrição de palestrantes via formulário até 22/05.",
+    bio: "Submeta sua palestra até a data limite do edital.",
+  },
+  {
+    name: "A confirmar",
+    role: "Palestrante",
+    bio: "Experiências da indústria e da academia.",
+  },
+  {
+    name: "A confirmar",
+    role: "Palestrante",
+    bio: "IA aplicada a produtos e serviços reais.",
+  },
+  {
+    name: "A confirmar",
+    role: "Palestrante",
+    bio: "Em breve: perfis completos e fotos.",
   },
 ] as const

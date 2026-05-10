@@ -1,5 +1,7 @@
+import { Fragment } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { InnerPageShell } from "@/components/inner-page-shell"
 
 const faq = [
   {
@@ -40,24 +42,32 @@ export default function FaqPage() {
   return (
     <>
       <Navbar />
-      <main className="flex-1 py-16 px-4">
-        <div className="max-w-2xl mx-auto">
-          <h1 className="text-4xl font-bold mb-2">Perguntas frequentes</h1>
-          <p className="text-muted-foreground mb-12">Ficou com dúvida? Veja as respostas abaixo.</p>
-          <div className="space-y-6">
+      <InnerPageShell
+        title="Perguntas frequentes"
+        description="Ficou com dúvida? Veja as respostas abaixo."
+      >
+        <Fragment>
+          <div className="space-y-8">
             {faq.map((item, i) => (
-              <div key={i} className="border-b border-border pb-6 last:border-0">
-                <h2 className="font-semibold text-lg mb-2">{item.q}</h2>
-                <p className="text-muted-foreground leading-relaxed">{item.a}</p>
+              <div
+                key={i}
+                className="border-b border-border/60 pb-8 last:border-0 last:pb-0"
+              >
+                <h2 className="font-mono text-lg font-semibold text-foreground md:text-xl">
+                  {item.q}
+                </h2>
+                <p className="mt-3 leading-relaxed text-muted-foreground md:text-base">{item.a}</p>
               </div>
             ))}
           </div>
-          <div className="mt-12 bg-muted/60 rounded-xl border border-border p-6 text-center">
-            <p className="text-muted-foreground mb-1">Não encontrou o que procurava?</p>
-            <p className="font-medium">Entre em contato com a organização pelo e-mail da universidade.</p>
+          <div className="mt-14 rounded-2xl border border-cyan-500/20 bg-card/60 px-6 py-8 text-center backdrop-blur-sm md:px-10">
+            <p className="text-muted-foreground">Não encontrou o que procurava?</p>
+            <p className="mt-2 font-medium text-foreground">
+              Entre em contato com a organização pelo e-mail da universidade.
+            </p>
           </div>
-        </div>
-      </main>
+        </Fragment>
+      </InnerPageShell>
       <Footer />
     </>
   )

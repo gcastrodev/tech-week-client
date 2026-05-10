@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { InnerPageShell, InnerPageSuccess } from "@/components/inner-page-shell"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -19,8 +20,8 @@ export default function CheckinPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const raNum = Number(ra)
-    if (!ra || isNaN(raNum) || ra.length > 9) {
-      toast.error("RA inválido.")
+    if (isNaN(raNum) || raNum < 100000000 || raNum > 999999999) {
+      toast.error("RA deve ter exatamente 9 dígitos.")
       return
     }
 
@@ -47,16 +48,24 @@ export default function CheckinPage() {
     return (
       <>
         <Navbar />
-        <main className="flex-1 flex items-center justify-center px-4 py-24">
-          <div className="text-center flex flex-col items-center gap-4">
-            <CheckCircle className="text-brand" size={72} />
-            <h1 className="text-3xl font-bold">Presença confirmada!</h1>
-            <p className="text-muted-foreground">Aproveite a Tech Week!</p>
-            <Button variant="outline" className="mt-4" onClick={() => { setDone(false); setRa("") }}>
+        <InnerPageSuccess
+          title="Presença confirmada!"
+          description="Aproveite a Tech Week!"
+          actions={
+            <Button
+              variant="outline"
+              className="border-neon/40 font-mono text-neon hover:bg-neon/10"
+              onClick={() => {
+                setDone(false)
+                setRa("")
+              }}
+            >
               Fazer outro check-in
             </Button>
-          </div>
-        </main>
+          }
+        >
+          <CheckCircle className="mx-auto text-neon" size={80} strokeWidth={1.75} />
+        </InnerPageSuccess>
         <Footer />
       </>
     )
@@ -65,41 +74,46 @@ export default function CheckinPage() {
   return (
     <>
       <Navbar />
-      <main className="flex-1 py-16 px-4">
-        <div className="max-w-sm mx-auto">
-          <h1 className="text-4xl font-bold mb-2">Check-in</h1>
-          <p className="text-muted-foreground mb-8">
-            Confirme sua presença informando seu RA ao final de cada palestra.
-          </p>
-          <Card>
-            <CardHeader>
-              <CardTitle>Confirmar presença</CardTitle>
-              <CardDescription>
-                Digite seu RA para registrar sua participação.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="ra">RA</Label>
-                  <Input
-                    id="ra"
-                    placeholder="Ex: 123456789"
-                    value={ra}
-                    onChange={(e) => setRa(e.target.value.replace(/\D/g, "").slice(0, 9))}
-                    inputMode="numeric"
-                    autoFocus
-                    required
-                  />
-                </div>
-                <Button type="submit" className="w-full bg-brand hover:bg-brand/90 text-white font-semibold" disabled={loading}>
-                  {loading ? <><Loader2 size={16} className="animate-spin mr-2" /> Confirmando...</> : "Confirmar presença"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+      <InnerPageShell
+        title="Check-in"
+        description="Confirme sua presença informando seu RA ao final de cada palestra."
+      >
+        <Card className="border border-cyan-500/20 bg-card/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,0.65)] backdrop-blur-md">
+          <CardHeader>
+            <CardTitle className="font-mono text-xl">Confirmar presença</CardTitle>
+            <CardDescription>Digite seu RA para registrar sua participação.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="ra">RA</Label>
+                <Input
+                  id="ra"
+                  placeholder="Ex: 123456789"
+                  value={ra}
+                  onChange={(e) => setRa(e.target.value.replace(/\D/g, "").slice(0, 9))}
+                  inputMode="numeric"
+                  autoFocus
+                  required
+                />
+              </div>
+              <Button
+                type="submit"
+                className="w-full bg-neon font-mono font-semibold text-black hover:bg-neon/90"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={16} className="mr-2 animate-spin" /> Confirmando...
+                  </>
+                ) : (
+                  "Confirmar presença"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </InnerPageShell>
       <Footer />
     </>
   )

@@ -1,3 +1,7 @@
+// ATENÇÃO: O backend Rust/Axum precisa de middleware CORS configurado.
+// Adicionar tower_http::cors::CorsLayer no main.rs do backend.
+// Sem isso, todas as requests vão falhar no browser com CORS error.
+
 import type {
     RegistrationPayload,
     Registration,
@@ -109,15 +113,15 @@ import type {
   export const MOCK_PROJECTS: Project[] = [
     {
       id: 1,
-      name: "João Henrique",
-      student_registration: 321654987,
+      submitter_name: "João Henrique",
+      submitter_registration: 321654987,
       project_name: "AgroIA — Detecção de pragas com visão computacional",
       description: "Sistema que usa visão computacional pra identificar pragas em lavouras a partir de fotos tiradas pelo celular.",
     },
     {
       id: 2,
-      name: "Fernanda Oliveira",
-      student_registration: 654987321,
+      submitter_name: "Fernanda Oliveira",
+      submitter_registration: 654987321,
       project_name: "MedBot — Triagem inteligente em UBS",
       description: "Chatbot de IA pra triagem inicial de pacientes em unidades básicas de saúde.",
     },

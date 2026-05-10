@@ -1,7 +1,6 @@
 "use client"
 
 import dynamic from "next/dynamic"
-import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 import {
@@ -14,7 +13,6 @@ import {
   CalendarDays,
   MapPin,
   Users,
-  User,
   Cpu,
   Coffee,
   ChevronRight,
@@ -22,23 +20,15 @@ import {
   Terminal,
   Mic2,
   Megaphone,
-  Hourglass,
   Sparkles,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import { TiltCard } from "@/components/tilt-card"
+import { SpeakerCarousel } from "@/components/speaker-carousel"
+import { SponsorCarousel } from "@/components/sponsor-carousel"
 import {
-  ASSETS,
   EVENT,
   scheduleByDay,
   sponsors,
@@ -46,13 +36,30 @@ import {
   type ScheduleType,
 } from "@/lib/event-data"
 
-const HeroWebGL = dynamic(
-  () => import("@/components/hero-webgl").then((m) => m.HeroWebGL),
+const MatrixRain = dynamic(
+  () => import("@/components/matrix-rain").then((m) => m.MatrixRain),
   { ssr: false, loading: () => null }
 )
 
-const MatrixRain = dynamic(
-  () => import("@/components/matrix-rain").then((m) => m.MatrixRain),
+const BinaryRain = dynamic(
+  () => import("@/components/binary-rain").then((m) => m.BinaryRain),
+  { ssr: false, loading: () => null }
+)
+const NeuralNetwork = dynamic(
+  () => import("@/components/neural-network").then((m) => m.NeuralNetwork),
+  { ssr: false, loading: () => null }
+)
+const AuroraBorealis = dynamic(
+  () => import("@/components/aurora-borealis").then((m) => m.AuroraBorealis),
+  { ssr: false, loading: () => null }
+)
+const RasenganChidori = dynamic(
+  () => import("@/components/rasengan-chidori").then((m) => m.RasenganChidori),
+  { ssr: false, loading: () => null }
+)
+
+const RutherfordAtom = dynamic(
+  () => import("@/components/rutherford-atom").then((m) => m.RutherfordAtom),
   { ssr: false, loading: () => null }
 )
 
@@ -84,24 +91,126 @@ function Section({
   )
 }
 
-function tierBadgeClass(tier: string) {
-  if (tier === "ouro")
-    return "border-yellow-500/50 text-yellow-400 font-mono text-xs"
-  if (tier === "prata")
-    return "border-slate-400/50 text-slate-400 font-mono text-xs"
-  if (tier === "bronze")
-    return "border-amber-700/50 text-amber-600 font-mono text-xs"
-  return "border-orange-500/40 text-orange-400 font-mono text-xs"
+const CAROUSEL_ROW_1 = [
+  { icon: "🤖", label: "Machine Learning" },
+  { icon: "⚡", label: "Edge Computing" },
+  { icon: "🧬", label: "Bioinformática" },
+  { icon: "🔐", label: "Cybersecurity" },
+  { icon: "🌐", label: "Web3" },
+  { icon: "📡", label: "IoT" },
+  { icon: "🎯", label: "Computer Vision" },
+  { icon: "🧠", label: "Deep Learning" },
+  { icon: "☁️", label: "Cloud Native" },
+  { icon: "🤝", label: "Open Source" },
+]
+
+const CAROUSEL_ROW_2 = [
+  { icon: "🚀", label: "DevOps" },
+  { icon: "📊", label: "Data Science" },
+  { icon: "🏗️", label: "Arquitetura de Software" },
+  { icon: "🔬", label: "LLMs & Agentes" },
+  { icon: "🎮", label: "Game Dev" },
+  { icon: "📱", label: "Mobile Dev" },
+  { icon: "🧩", label: "API Design" },
+  { icon: "🔄", label: "MLOps" },
+  { icon: "🛡️", label: "Privacidade de Dados" },
+  { icon: "✨", label: "Generative AI" },
+]
+
+function InfiniteCarousel() {
+  const row1Ref = useRef<HTMLDivElement>(null)
+  const row2Ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const speed1 = 0.4   // fileira de cima: mais lenta (vai para esquerda)
+    const speed2 = 0.7   // fileira de baixo: mais rápida (vai para direita)
+    let x1 = 0
+    let x2 = 0
+    let raf: number
+
+    function tick() {
+      x1 -= speed1
+      x2 += speed2
+
+      const r1 = row1Ref.current
+      const r2 = row2Ref.current
+      if (!r1 || !r2) { raf = requestAnimationFrame(tick); return }
+
+      const half1 = r1.scrollWidth / 2
+      const half2 = r2.scrollWidth / 2
+
+      if (Math.abs(x1) >= half1) x1 = 0
+      if (x2 >= half2) x2 = 0
+
+      r1.style.transform = `translateX(${x1}px)`
+      r2.style.transform = `translateX(${x2}px)`
+
+      raf = requestAnimationFrame(tick)
+    }
+
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [])
+
+  const items1 = [...CAROUSEL_ROW_1, ...CAROUSEL_ROW_1, ...CAROUSEL_ROW_1]
+  const items2 = [...CAROUSEL_ROW_2, ...CAROUSEL_ROW_2, ...CAROUSEL_ROW_2]
+
+  return (
+    <div className="relative overflow-hidden py-6 pb-8 select-none">
+      {/* Fade nas bordas */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32 bg-gradient-to-r from-background to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-32 bg-gradient-to-l from-background to-transparent" />
+
+      {/* Fileira 1 — vai para esquerda */}
+      <div className="mb-3 overflow-hidden">
+        <div ref={row1Ref} className="flex gap-3 will-change-transform">
+          {items1.map((item, i) => (
+            <div
+              key={i}
+              className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-card/80 px-5 py-2.5 backdrop-blur-sm"
+            >
+              <span className="text-xl">{item.icon}</span>
+              <span className="whitespace-nowrap font-mono text-sm font-medium text-foreground/80">
+                {item.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Fileira 2 — vai para direita (mais rápida) */}
+      <div className="overflow-hidden">
+        <div ref={row2Ref} className="flex gap-3 will-change-transform">
+          {items2.map((item, i) => (
+            <div
+              key={i}
+              className="flex shrink-0 items-center gap-2 rounded-full border border-neon/20 bg-neon-muted/30 px-5 py-2.5 backdrop-blur-sm"
+            >
+              <span className="text-xl">{item.icon}</span>
+              <span className="whitespace-nowrap font-mono text-sm font-medium text-neon/80">
+                {item.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function HomePage() {
   const heroRef = useRef<HTMLElement>(null)
   const storyRef = useRef<HTMLElement>(null)
+  const visaoGeralRef = useRef<HTMLElement>(null)
+  const programacaoRef = useRef<HTMLElement>(null)
+  const palestranthesRef = useRef<HTMLElement>(null)
+  const patrocinoresRef = useRef<HTMLElement>(null)
   const [heroFxReady, setHeroFxReady] = useState(false)
 
   useEffect(() => {
     setHeroFxReady(true)
   }, [])
+
   const { scrollYProgress: heroProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
@@ -119,84 +228,67 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
-      <main className="flex-1">
-        {/* Hero */}
+      <main className="relative isolate flex-1">
+        {/* Hero — fluxo normal: o conteúdo sobe com o scroll (sticky empilhado bloqueava isso) */}
         <section
           ref={heroRef}
-          className="relative flex min-h-[92vh] items-center overflow-hidden"
+          className="relative z-10 flex min-h-screen items-center overflow-hidden bg-[#F3EFEA] shadow-[0_28px_80px_rgba(0,0,0,0.28)]"
         >
-          {heroFxReady ? <HeroWebGL /> : null}
-          <div className="absolute inset-0 z-[2] opacity-[0.06]">
+          {/* Pantone Cloud Dancer (aprox. TCX 11-4201) + véus suaves */}
+          <div className="absolute inset-0 z-[2] opacity-[0.045] mix-blend-multiply">
             <MatrixRain />
           </div>
           <motion.div
-            className="pointer-events-none absolute -left-32 top-1/4 z-[3] h-[min(70vw,420px)] w-[min(70vw,420px)] rounded-full bg-cyan-300/30 blur-[110px]"
-            animate={{ opacity: [0.35, 0.58, 0.35] }}
+            className="pointer-events-none absolute -left-32 top-1/4 z-[3] h-[min(70vw,420px)] w-[min(70vw,420px)] rounded-full bg-cyan-400/25 blur-[110px]"
+            animate={{ opacity: [0.25, 0.45, 0.25] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           />
           <motion.div
-            className="pointer-events-none absolute -right-24 top-16 z-[3] h-[min(90vw,520px)] w-[min(90vw,520px)] rounded-full bg-sky-400/25 blur-[100px]"
-            animate={{ opacity: [0.4, 0.62, 0.4] }}
+            className="pointer-events-none absolute -right-24 top-16 z-[3] h-[min(90vw,520px)] w-[min(90vw,520px)] rounded-full bg-violet-400/20 blur-[100px]"
+            animate={{ opacity: [0.28, 0.48, 0.28] }}
             transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
           />
-          <div className="absolute inset-0 z-[3] bg-gradient-to-b from-slate-900/25 via-[#152a52]/55 to-background" />
-          <div className="pointer-events-none absolute inset-0 z-[3] bg-[radial-gradient(ellipse_85%_65%_at_50%_-5%,rgba(34,211,238,0.22),transparent_58%)]" />
-          <div className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-tr from-cyan-400/10 via-transparent to-emerald-400/15" />
+          <div className="absolute inset-0 z-[3] bg-gradient-to-b from-white/50 via-[#F3EFEA]/92 to-[#ebe6df]" />
+          <div className="pointer-events-none absolute inset-0 z-[3] bg-[radial-gradient(ellipse_90%_70%_at_50%_0%,rgba(56,189,248,0.18),transparent_55%)]" />
+          <div className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-tr from-cyan-300/15 via-transparent to-violet-300/12" />
+
+          <div className="pointer-events-none absolute inset-0 z-[3] opacity-[0.35] bg-[linear-gradient(rgba(100,116,139,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(100,116,139,0.1)_1px,transparent_1px)] bg-[size:48px_48px]" />
 
           <motion.div
             style={{ y: heroParallax, opacity: heroFade }}
-            className="relative z-10 mx-auto w-full max-w-6xl px-4 py-20 lg:py-28"
+            className="relative z-10 mx-auto w-full max-w-[96rem] px-6 lg:px-10 py-16 lg:py-24"
           >
             <motion.div
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-              className="grid items-center gap-12 lg:grid-cols-[1fr_minmax(280px,440px)] lg:gap-14"
+              className="grid items-center gap-10 lg:grid-cols-[1fr_minmax(300px,1.05fr)] xl:gap-14"
             >
-              <div>
-                <div className="mb-6 flex flex-wrap items-center gap-2">
-                  <Terminal size={14} className="text-neon" />
-                  <span className="font-mono text-sm text-neon">
-                    {EVENT.fullTitle}
-                  </span>
-                  <span className="animate-blink font-mono text-neon">|</span>
-                  <Badge
-                    variant="outline"
-                    className="border-cyan-500/40 font-mono text-xs text-cyan-300"
-                  >
-                    {EVENT.hashtag}
-                  </Badge>
-                </div>
+              <div className="max-w-3xl">
+                <Badge
+                  variant="outline"
+                  className="mb-6 border-slate-400/70 bg-white/55 px-4 py-2 font-mono text-sm text-slate-800 shadow-sm backdrop-blur-sm md:text-base md:px-5 md:py-2.5"
+                >
+                  UNICESUMAR · {EVENT.dates.labelShort.toUpperCase()}
+                </Badge>
 
-              <h1 className="text-5xl font-bold leading-[0.95] tracking-tight font-mono md:text-7xl lg:text-[5.5rem] lg:leading-[0.92]">
-                Tech<span className="glow text-neon">_</span>Week
-              </h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.12, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-                className="mb-8 mt-5 max-w-2xl bg-gradient-to-r from-white via-cyan-100 to-emerald-200/95 bg-clip-text font-sans text-lg font-medium leading-snug text-transparent md:text-2xl md:leading-relaxed"
-              >
-                {EVENT.theme}
-              </motion.p>
-
-                <div className="mb-10 flex flex-col gap-2 font-mono text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center sm:gap-6">
-                  <span className="flex items-center gap-1.5">
-                    <CalendarDays size={14} className="text-neon" />{" "}
-                    {EVENT.dates.labelShort}
+                <h1 className="font-sans text-5xl font-bold leading-[1.05] tracking-tight md:text-6xl lg:text-[4.25rem] xl:text-[4.75rem]">
+                  <span className="text-slate-900">Tech Week</span>
+                  <br />
+                  <span className="bg-gradient-to-b from-violet-200 via-violet-400 to-blue-700 bg-clip-text text-transparent">
+                    Inteligência
                   </span>
-                  <span className="flex items-center gap-1.5">
-                    <Clock size={14} className="text-neon" /> {EVENT.time.label}{" "}
-                    · palestras de {EVENT.lectureMinutes} min
+                  <br />
+                  <span className="bg-gradient-to-b from-cyan-200 via-cyan-400 to-blue-700 bg-clip-text text-transparent">
+                    Artificial
                   </span>
-                  <span className="flex items-center gap-1.5">
-                    <MapPin size={14} className="text-neon" />{" "}
-                    {EVENT.location.venue}
-                  </span>
-                </div>
+                </h1>
 
-                <div className="flex flex-wrap gap-3">
+                <p className="mt-6 max-w-2xl font-sans text-lg leading-relaxed text-slate-700 md:text-xl md:leading-relaxed">
+                  {EVENT.theme}
+                </p>
+
+                <div className="mt-10 flex flex-wrap gap-4">
                   <motion.div
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
@@ -205,10 +297,10 @@ export default function HomePage() {
                     <Button
                       asChild
                       size="lg"
-                      className="bg-neon font-mono font-bold text-black hover:bg-neon/90"
+                      className="h-auto bg-black px-10 py-6 text-lg font-semibold text-white shadow-lg hover:bg-neutral-900 md:px-12 md:py-7 md:text-xl"
                     >
-                      <Link href="/inscricao">
-                        inscreva-se <ChevronRight size={16} />
+                      <Link href="/projetos">
+                        Submeter meu projeto <ChevronRight className="size-5 md:size-6" />
                       </Link>
                     </Button>
                   </motion.div>
@@ -220,115 +312,80 @@ export default function HomePage() {
                     <Button
                       asChild
                       size="lg"
-                      variant="outline"
-                      className="border-neon/40 font-mono text-neon hover:bg-neon-muted"
+                      variant="default"
+                      className="h-auto border-0 !bg-[#004a8f] px-10 py-6 text-lg font-semibold !text-white shadow-lg hover:!bg-[#003d73] md:px-12 md:py-7 md:text-xl dark:!bg-[#004a8f] dark:hover:!bg-[#003d73]"
                     >
-                      <Link href="/projetos">submeter projeto</Link>
-                    </Button>
-                  </motion.div>
-                  <motion.div
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 24 }}
-                  >
-                    <Button
-                      asChild
-                      size="lg"
-                      variant="outline"
-                      className="border-cyan-500/35 font-mono text-cyan-300 hover:bg-cyan-500/10"
-                    >
-                      <a
-                        href={EVENT.cfp.formUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        call for speakers
-                      </a>
+                      <Link href="#programacao">Ver agenda</Link>
                     </Button>
                   </motion.div>
                 </div>
 
-                <p className="mt-8 max-w-xl text-sm italic text-muted-foreground">
-                  {EVENT.ctaFlyer}
-                </p>
-
-                {sponsors[0]?.logoSrc ? (
-                  <div className="mt-10 rounded-2xl border border-cyan-500/25 bg-white/[0.06] p-5 backdrop-blur-md section-glow">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-300/90">
-                      Patrocínio
+                <div className="mt-14 grid max-w-xl grid-cols-3 gap-6 border-t border-slate-300/80 pt-10 md:gap-10">
+                  <div>
+                    <p className="font-mono text-3xl font-bold text-slate-900 md:text-4xl">
+                      20+
                     </p>
-                    <div className="mt-4 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-                      <div className="rounded-2xl bg-white px-8 py-5 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] ring-2 ring-orange-400/60">
-                        <Image
-                          src={sponsors[0].logoSrc}
-                          alt={sponsors[0].logoAlt ?? sponsors[0].name}
-                          width={220}
-                          height={179}
-                          className="h-auto w-[min(100%,220px)] object-contain"
-                          priority
-                        />
-                      </div>
-                      <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-                        <span className="font-medium text-foreground">
-                          {sponsors[0].name}
-                        </span>{" "}
-                        — primeiro patrocinador confirmado. Novos apoios serão
-                        divulgados aqui.
-                      </p>
-                    </div>
+                    <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-slate-600 md:text-xs">
+                      palestrantes
+                    </p>
                   </div>
-                ) : null}
+                  <div>
+                    <p className="font-mono text-3xl font-bold text-slate-900 md:text-4xl">
+                      3
+                    </p>
+                    <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-slate-600 md:text-xs">
+                      dias de evento
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-mono text-3xl font-bold text-slate-900 md:text-4xl">
+                      ∞
+                    </p>
+                    <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-slate-600 md:text-xs">
+                      networking
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.94, y: 24 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{
-                  duration: 0.85,
-                  delay: 0.15,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none"
-              >
-                <div className="img-reveal-ring relative overflow-hidden rounded-3xl bg-gradient-to-br from-cyan-400/25 via-transparent to-neon-muted/30 p-[2px]">
-                  <div className="overflow-hidden rounded-[22px] bg-[#0c1426] shadow-2xl">
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      transition={{ type: "spring", stiffness: 260, damping: 22 }}
-                      className="origin-center"
-                    >
-                      <Image
-                        src={ASSETS.heroFlyer}
-                        alt="Arte oficial II TECH WEEK — Inteligência Artificial"
-                        width={576}
-                        height={1024}
-                        className="h-auto w-full object-cover object-top"
-                        sizes="(max-width: 1024px) 90vw, 440px"
-                        priority
-                      />
-                    </motion.div>
+              <div className="relative flex min-h-[min(85vh,760px)] w-full items-center justify-center lg:min-h-[min(90vh,820px)] lg:justify-self-end">
+                {heroFxReady ? (
+                  <RutherfordAtom embedded className="min-h-[min(85vh,760px)] w-full py-1" />
+                ) : (
+                  <div className="flex min-h-[320px] w-full items-center justify-center">
+                    <span className="font-mono text-sm text-muted-foreground">
+                      …
+                    </span>
                   </div>
-                </div>
-                <p className="mt-3 text-center font-mono text-[11px] text-muted-foreground lg:text-left">
-                  Arte do evento · identidade visual II TECH WEEK
-                </p>
-                <div className="pointer-events-none absolute -bottom-8 -right-8 h-36 w-36 rounded-full bg-neon/15 blur-3xl" />
-              </motion.div>
+                )}
+              </div>
             </motion.div>
           </motion.div>
         </section>
 
-        <div className="light-rail relative shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75)]">
-        {/* Bento — visão geral */}
-        <Section className="mx-auto max-w-6xl px-4 py-14">
+        <section
+          ref={visaoGeralRef}
+          className="relative z-20 min-h-screen overflow-hidden rounded-t-3xl bg-[#1a2545] pb-0 shadow-[0_28px_90px_rgba(0,0,0,0.5)]"
+        >
+          <div className="pointer-events-none absolute inset-0 min-h-[520px] opacity-95">
+            {heroFxReady ? <BinaryRain /> : null}
+          </div>
+          <div className="relative z-10">
+            {/* Bento — visão geral */}
+            <Section className="relative mx-auto max-w-[96rem] px-6 lg:px-10 py-14">
           <div className="mb-8 flex items-center gap-2">
             <Sparkles size={16} className="text-cyan-400" />
-            <h2 className="font-mono text-2xl font-bold md:text-3xl">
+            <h2 className="font-mono text-4xl font-bold md:text-5xl lg:text-6xl">
               visão geral<span className="animate-blink text-neon">_</span>
             </h2>
           </div>
+          <p className="mb-10 max-w-3xl font-sans text-base leading-relaxed text-muted-foreground md:text-lg">
+            O maior evento de tecnologia e inovação da UniCesumar. Três dias de
+            palestras, networking e apresentações de projetos com foco em
+            Inteligência Artificial.
+          </p>
 
-          <div className="grid auto-rows-[minmax(120px,auto)] grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+          <div className="grid auto-rows-[minmax(140px,auto)] grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -338,16 +395,20 @@ export default function HomePage() {
                 scale: 1.02,
                 borderColor: "rgba(0, 255, 136, 0.35)",
               }}
-              className="group relative col-span-2 row-span-2 overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-[0_24px_60px_-28px_rgba(0,0,0,0.45)] md:col-span-2 md:row-span-2"
+              className="group relative col-span-2 row-span-2 overflow-hidden rounded-2xl border border-border bg-card/85 p-6 shadow-[0_24px_60px_-28px_rgba(0,0,0,0.45)] backdrop-blur-md md:col-span-2 md:row-span-2"
             >
               <div className="absolute right-4 top-4 opacity-20 transition-opacity group-hover:opacity-40">
-                <Cpu className="size-24 text-cyan-400" />
+                <Sparkles className="size-24 text-cyan-400" />
               </div>
-              <p className="font-mono text-xs text-muted-foreground">
-                {EVENT.edition} edição
+              <p className="font-mono text-base text-muted-foreground">
+                o que esperar
               </p>
-              <p className="mt-2 font-mono text-xl font-bold leading-snug text-foreground md:text-2xl">
-                {EVENT.theme}
+              <p className="mt-3 font-mono text-2xl font-bold leading-snug text-foreground md:text-3xl">
+                Uma experiência completa de imersão tecnológica
+              </p>
+              <p className="mt-3 max-w-md font-sans text-lg leading-relaxed text-muted-foreground">
+                Atividades pensadas para conectar e inspirar — palestras,
+                projetos, coffee breaks e networking, tudo no mesmo evento.
               </p>
             </motion.div>
 
@@ -357,12 +418,15 @@ export default function HomePage() {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
               whileHover={{ y: -4 }}
-              className="rounded-2xl border border-border bg-card/90 p-5 backdrop-blur-sm transition-colors hover:border-neon/30"
+              className="rounded-2xl border border-border bg-card/85 p-5 backdrop-blur-md transition-colors hover:border-neon/30"
             >
-              <CalendarDays className="mb-3 size-5 text-neon" />
-              <p className="font-mono text-xs text-muted-foreground">datas</p>
-              <p className="mt-1 font-mono text-sm font-semibold leading-tight">
-                {EVENT.dates.labelShort}
+              <Cpu className="mb-3 size-5 text-cyan-400" />
+              <p className="font-mono text-base text-muted-foreground">tema</p>
+              <p className="mt-1 font-mono text-lg font-semibold leading-tight">
+                Inteligência Artificial
+              </p>
+              <p className="mt-1 text-base leading-relaxed text-muted-foreground">
+                Projetos inovadores com foco em IA.
               </p>
             </motion.div>
 
@@ -372,12 +436,15 @@ export default function HomePage() {
               viewport={{ once: true }}
               transition={{ delay: 0.12 }}
               whileHover={{ y: -4 }}
-              className="rounded-2xl border border-border bg-card/90 p-5 backdrop-blur-sm transition-colors hover:border-neon/30"
+              className="rounded-2xl border border-border bg-card/85 p-5 backdrop-blur-md transition-colors hover:border-neon/30"
             >
-              <Clock className="mb-3 size-5 text-neon" />
-              <p className="font-mono text-xs text-muted-foreground">horário</p>
-              <p className="mt-1 font-mono text-sm font-semibold">
-                {EVENT.time.label}
+              <CalendarDays className="mb-3 size-5 text-neon" />
+              <p className="font-mono text-base text-muted-foreground">quando</p>
+              <p className="mt-1 font-mono text-lg font-semibold leading-tight">
+                1, 2 e 3 de junho de 2026
+              </p>
+              <p className="mt-1 text-base leading-relaxed text-muted-foreground">
+                Três dias intensos de tecnologia.
               </p>
             </motion.div>
 
@@ -387,16 +454,15 @@ export default function HomePage() {
               viewport={{ once: true }}
               transition={{ delay: 0.14 }}
               whileHover={{ y: -4 }}
-              className="col-span-2 rounded-2xl border border-border bg-card/90 p-5 backdrop-blur-sm transition-colors hover:border-cyan-500/35 md:col-span-2"
+              className="rounded-2xl border border-border bg-card/85 p-5 backdrop-blur-md transition-colors hover:border-amber-500/40"
             >
-              <MapPin className="mb-3 size-5 text-cyan-400" />
-              <p className="font-mono text-xs text-muted-foreground">local</p>
-              <p className="mt-1 font-mono text-sm font-semibold leading-snug">
-                {EVENT.location.venue}
-                <br />
-                <span className="font-normal text-muted-foreground">
-                  {EVENT.location.addressLine} · {EVENT.location.city}
-                </span>
+              <Coffee className="mb-3 size-5 text-amber-400" />
+              <p className="font-mono text-base text-muted-foreground">
+                coffee break
+              </p>
+              <p className="mt-1 text-lg leading-relaxed text-foreground/90">
+                Pausas estratégicas para recarregar as energias e fazer
+                conexões valiosas.
               </p>
             </motion.div>
 
@@ -406,23 +472,16 @@ export default function HomePage() {
               viewport={{ once: true }}
               transition={{ delay: 0.16 }}
               whileHover={{ y: -4 }}
-              className="rounded-2xl border border-border bg-gradient-to-br from-neon-muted/40 to-card p-5 transition-colors hover:border-neon/40"
+              className="rounded-2xl border border-border bg-card/85 p-5 backdrop-blur-md transition-colors hover:border-cyan-500/35"
             >
-              <Megaphone className="mb-3 size-5 text-neon" />
-              <p className="font-mono text-xs text-muted-foreground">
-                palestrantes
+              <Users className="mb-3 size-5 text-cyan-400" />
+              <p className="font-mono text-base text-muted-foreground">
+                networking
               </p>
-              <p className="mt-1 font-mono text-sm font-semibold">
-                Prazo: {EVENT.cfp.deadlineLabel}
+              <p className="mt-1 text-lg leading-relaxed text-foreground/90">
+                Conecte-se com profissionais, empresas e colegas que
+                compartilham sua paixão por tecnologia.
               </p>
-              <a
-                href={EVENT.cfp.formUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 inline-flex items-center gap-1 font-mono text-xs text-neon underline-offset-4 hover:underline"
-              >
-                formulário
-              </a>
             </motion.div>
 
             <motion.div
@@ -431,19 +490,40 @@ export default function HomePage() {
               viewport={{ once: true }}
               transition={{ delay: 0.18 }}
               whileHover={{ y: -4 }}
-              className="rounded-2xl border border-border bg-card/90 p-5 backdrop-blur-sm transition-colors hover:border-neon/30"
+              className="col-span-2 rounded-2xl border border-border bg-gradient-to-br from-neon-muted/30 to-card/85 p-5 backdrop-blur-md transition-colors hover:border-neon/40 md:col-span-2"
             >
-              <Hourglass className="mb-3 size-5 text-neon" />
-              <p className="font-mono text-xs text-muted-foreground">formato</p>
-              <p className="mt-1 font-mono text-sm font-semibold">
-                {EVENT.lectureMinutes} min por palestra
+              <Mic2 className="mb-3 size-5 text-neon" />
+              <p className="font-mono text-base text-muted-foreground">
+                palestras
+              </p>
+              <p className="mt-1 text-lg leading-relaxed text-foreground/90">
+                Nos dias 2 e 3, especialistas e empresários do setor compartilham
+                insights sobre tecnologia e IA.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              whileHover={{ y: -4 }}
+              className="col-span-2 rounded-2xl border border-border bg-card/85 p-5 backdrop-blur-md transition-colors hover:border-cyan-500/35 md:col-span-2"
+            >
+              <Megaphone className="mb-3 size-5 text-cyan-400" />
+              <p className="font-mono text-base text-muted-foreground">
+                submissão de projetos
+              </p>
+              <p className="mt-1 text-lg leading-relaxed text-foreground/90">
+                Apresente seu projeto de IA para uma banca de especialistas e
+                exponha para o público.
               </p>
             </motion.div>
           </div>
         </Section>
 
         {/* Stats */}
-        <Section className="mx-auto grid max-w-6xl grid-cols-2 gap-3 px-4 py-6 md:grid-cols-4 md:gap-4">
+        <Section className="mx-auto grid max-w-[96rem] grid-cols-2 gap-3 px-6 py-6 lg:px-10 md:grid-cols-4 md:gap-4">
           {[
             { icon: Users, label: "público esperado", value: "500+" },
             { icon: Mic2, label: "noites de palestras", value: "3" },
@@ -475,7 +555,7 @@ export default function HomePage() {
         {/* Scrollytelling leve */}
         <section
           ref={storyRef}
-          className="border-y border-slate-200/60 py-20"
+          className="py-20"
         >
           <motion.div
             style={{ y: storySlide, opacity: storyOpacity }}
@@ -498,194 +578,148 @@ export default function HomePage() {
             </p>
           </motion.div>
         </section>
+            <InfiniteCarousel />
+          </div>
+        </section>
 
         {/* Programação */}
-        <Section className="border-y border-slate-200/60 py-16">
-          <div className="mx-auto max-w-6xl px-4">
-            <div className="mb-2 flex items-center gap-2">
-              <Terminal size={16} className="text-neon" />
-              <h2 className="font-mono text-3xl font-bold">
-                programação<span className="animate-blink text-neon">_</span>
-              </h2>
-            </div>
-            <p className="mb-10 font-mono text-sm text-muted-foreground">
-              // três noites · {EVENT.time.label} · detalhes das palestras em
-              divulgação
-            </p>
-
-            <div className="grid gap-6 md:grid-cols-3">
-              {scheduleByDay.map((day, di) => (
-                <motion.div
-                  key={day.id}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: di * 0.1, duration: 0.45 }}
-                  className="flex flex-col rounded-2xl border border-border bg-card p-1 shadow-lg shadow-slate-900/5"
-                >
-                  <div className="rounded-xl bg-muted px-4 py-3">
-                    <p className="font-mono text-lg font-bold text-neon">
-                      {day.dateLabel}
-                    </p>
-                    <p className="font-mono text-xs text-muted-foreground">
-                      {day.weekday}
-                    </p>
-                  </div>
-                  <div className="flex flex-1 flex-col gap-2 p-3">
-                    {day.blocks.map((item, i) => (
-                      <motion.div
-                        key={`${day.id}-${item.time}`}
-                        initial={{ opacity: 0, x: -12 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{
-                          delay: i * 0.05 + di * 0.05,
-                          duration: 0.35,
-                        }}
-                        whileHover={{
-                          borderColor: "rgba(0, 255, 136, 0.35)",
-                        }}
-                        className="flex flex-col gap-1 rounded-lg border border-border bg-muted/40 px-3 py-3 transition-colors"
-                      >
-                        <span className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
-                          <Clock size={12} /> {item.time}
-                        </span>
-                        <span className="text-sm font-medium leading-snug">
-                          {item.title}
-                        </span>
-                        <span
-                          className={`w-fit rounded border px-2 py-0.5 font-mono text-xs ${typeStyle[item.type]}`}
-                        >
-                          {item.type}
-                        </span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+        <section
+          id="programacao"
+          ref={programacaoRef}
+          className="relative z-30 scroll-mt-[120px] min-h-screen overflow-hidden rounded-t-3xl bg-[#07080f] pt-6 shadow-[0_28px_90px_rgba(0,0,0,0.5)] md:pt-10"
+        >
+          <div className="pointer-events-none absolute inset-0 min-h-[420px] opacity-40">
+            {heroFxReady ? <RasenganChidori /> : null}
           </div>
-        </Section>
+          <Section className="relative z-10 py-14 md:py-20">
+            <div className="mx-auto max-w-[96rem] px-6 lg:px-10">
+              <div className="mb-2 flex items-center gap-2">
+                <Terminal size={16} className="text-neon" />
+                <h2 className="font-mono text-4xl font-bold md:text-5xl lg:text-6xl">
+                  programação<span className="animate-blink text-neon">_</span>
+                </h2>
+              </div>
+              <p className="mb-12 max-w-3xl font-mono text-sm leading-relaxed text-muted-foreground md:text-base">
+                Três dias de evento · cada dia com início e encerramento em{" "}
+                <span className="text-foreground/90">{EVENT.time.label}</span>
+                . Horários internos e palestras serão divulgados em seguida.
+              </p>
+
+              <div className="grid gap-8 md:grid-cols-3 md:gap-10">
+                {scheduleByDay.map((day, di) => (
+                  <motion.div
+                    key={day.id}
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: di * 0.1, duration: 0.45 }}
+                    className="flex min-h-[420px] flex-col rounded-3xl border border-border bg-card/95 p-2 shadow-xl shadow-black/20 backdrop-blur-sm md:min-h-[480px]"
+                  >
+                    <div className="rounded-2xl bg-muted px-5 py-5 md:px-6 md:py-6">
+                      <p className="font-mono text-xl font-bold text-neon md:text-2xl">
+                        {day.dateLabel}
+                      </p>
+                      <p className="mt-1 font-mono text-sm text-muted-foreground">
+                        {day.weekday}
+                      </p>
+                      <p className="mt-4 flex items-center gap-2 border-t border-border/80 pt-4 font-mono text-sm font-semibold text-cyan-300">
+                        <Clock size={16} className="shrink-0 opacity-80" />
+                        {day.dayRange}
+                      </p>
+                    </div>
+                    <div className="flex flex-1 flex-col gap-3 p-4 md:gap-4 md:p-5">
+                      {day.blocks.map((item, i) => (
+                        <motion.div
+                          key={`${day.id}-${item.title}-${i}`}
+                          initial={{ opacity: 0, x: -12 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{
+                            delay: i * 0.05 + di * 0.05,
+                            duration: 0.35,
+                          }}
+                          whileHover={{
+                            borderColor: "rgba(0, 255, 136, 0.35)",
+                          }}
+                          className="flex flex-col gap-2 rounded-xl border border-border bg-muted/45 px-4 py-4 transition-colors md:px-5 md:py-5"
+                        >
+                          <span className="text-base font-medium leading-snug md:text-lg">
+                            {item.title}
+                          </span>
+                          <span
+                            className={`w-fit rounded-md border px-2.5 py-1 font-mono text-xs ${typeStyle[item.type]}`}
+                          >
+                            {item.type}
+                          </span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </Section>
+        </section>
 
         {/* Palestrantes — prévia */}
-        <Section className="mx-auto max-w-6xl px-4 py-16">
-          <div className="mb-2 flex items-center gap-2">
-            <Mic2 size={16} className="text-neon" />
-            <h2 className="font-mono text-3xl font-bold">
-              palestrantes<span className="animate-blink text-neon">_</span>
-            </h2>
+        <section
+          ref={palestranthesRef}
+          className="relative z-40 flex min-h-screen flex-col overflow-hidden rounded-t-3xl bg-[#060b18] shadow-[0_28px_90px_rgba(0,0,0,0.5)]"
+        >
+          <div className="pointer-events-none absolute inset-0 min-h-screen opacity-35">
+            {heroFxReady ? <NeuralNetwork /> : null}
           </div>
-          <p className="mb-8 max-w-2xl font-mono text-sm text-muted-foreground">
-            Prévia no site da Tech Week; o hub completo (perfis, bios e links)
-            será publicado em página dedicada. Submeta sua palestra até{" "}
-            {EVENT.cfp.deadlineLabel}.
-          </p>
-          <div className="grid gap-4 md:grid-cols-3">
-            {speakerPreview.map((s, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                whileHover={{ y: -4 }}
-              >
-                <Card className="h-full overflow-hidden border-border/80 transition-colors hover:border-cyan-500/35">
-                  <div className="relative h-20 bg-gradient-to-br from-cyan-500/35 via-[#15284a] to-neon-muted/25">
-                    <div className="absolute bottom-0 left-4 translate-y-1/2">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-background bg-card shadow-lg">
-                        <User className="text-neon" size={22} />
-                      </div>
-                    </div>
-                  </div>
-                  <CardHeader className="pt-9">
-                    <CardTitle className="font-mono">{s.name}</CardTitle>
-                    <CardDescription className="font-mono text-xs">
-                      {s.role}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                      {s.bio}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </Section>
-
-        {/* Patrocinadores */}
-        <Section className="mx-auto max-w-6xl px-4 py-16">
-          <div className="mb-2 flex items-center gap-2">
-            <Terminal size={16} className="text-neon" />
-            <h2 className="font-mono text-3xl font-bold">
-              patrocinadores<span className="animate-blink text-neon">_</span>
-            </h2>
-          </div>
-          <p className="mb-8 font-mono text-sm text-muted-foreground">
-            // parcerias que viabilizam o evento — novos logos em breve
-          </p>
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {sponsors.map((s, i) => (
-              <motion.div
-                key={s.name}
-                initial={{ opacity: 0, scale: 0.94 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className="min-w-0"
-              >
-                <TiltCard className="rounded-2xl border border-cyan-500/20 bg-card/80 p-6 transition-shadow hover:shadow-[0_0_50px_-18px_rgba(34,211,238,0.35)]">
-                  <div className="flex flex-col items-center gap-5">
-                    {s.logoSrc ? (
-                      <div className="flex min-h-[160px] w-full max-w-[300px] items-center justify-center rounded-2xl bg-white px-10 py-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.55)] ring-2 ring-orange-400/55">
-                        <Image
-                          src={s.logoSrc}
-                          alt={s.logoAlt ?? s.name}
-                          width={260}
-                          height={212}
-                          className="h-auto w-full max-w-[260px] object-contain"
-                          sizes="260px"
-                          priority={i === 0}
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex h-24 w-24 items-center justify-center rounded-xl bg-muted font-mono text-xs text-muted-foreground">
-                        logo
-                      </div>
-                    )}
-                    <div className="text-center">
-                      <span className="font-mono text-base font-semibold text-foreground">
-                        {s.name}
-                      </span>
-                      <div className="mt-2 flex justify-center">
-                        <Badge
-                          variant="outline"
-                          className={tierBadgeClass(s.tier)}
-                        >
-                          {s.tier}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                </TiltCard>
-              </motion.div>
-            ))}
-          </div>
-        </Section>
-
-        {/* Localização */}
-        <Section className="border-y border-slate-200/60 py-16">
-          <div className="mx-auto max-w-6xl px-4">
+          <Section className="relative z-10 mx-auto flex w-full max-w-[96rem] flex-1 flex-col justify-center px-6 py-14 lg:px-10 md:py-16">
             <div className="mb-2 flex items-center gap-2">
-              <Terminal size={16} className="text-neon" />
-              <h2 className="font-mono text-3xl font-bold">
-                localização<span className="animate-blink text-neon">_</span>
+              <Mic2 size={16} className="text-neon" />
+              <h2 className="font-mono text-4xl font-bold md:text-5xl lg:text-6xl">
+                palestrantes<span className="animate-blink text-neon">_</span>
               </h2>
             </div>
-            <p className="mb-6 flex flex-wrap items-center gap-1.5 font-mono text-sm text-muted-foreground">
-              <MapPin size={14} className="text-neon" />
+            <p className="mb-12 max-w-2xl font-mono text-sm leading-relaxed text-muted-foreground md:text-base">
+              Prévia no site da Tech Week; o hub completo (perfis, bios e links)
+              será publicado em página dedicada. Submeta sua palestra até{" "}
+              {EVENT.cfp.deadlineLabel}.
+            </p>
+            <SpeakerCarousel speakers={speakerPreview} />
+          </Section>
+        </section>
+
+        {/* Patrocinadores */}
+        <section
+          ref={patrocinoresRef}
+          className="relative z-50 flex min-h-screen flex-col overflow-hidden rounded-t-3xl bg-[#070c1a] shadow-[0_28px_90px_rgba(0,0,0,0.5)]"
+        >
+          <div className="pointer-events-none absolute inset-0 min-h-screen opacity-30">
+            {heroFxReady ? <AuroraBorealis /> : null}
+          </div>
+          <Section className="relative z-10 mx-auto flex w-full max-w-[96rem] flex-1 flex-col justify-start px-6 pb-12 pt-14 lg:px-10 md:pb-14 md:pt-16">
+            <div className="mb-1 flex items-center gap-2">
+              <Terminal size={16} className="text-neon" />
+              <h2 className="font-mono text-4xl font-bold md:text-5xl lg:text-6xl">
+                patrocinadores<span className="animate-blink text-neon">_</span>
+              </h2>
+            </div>
+            <p className="mb-8 font-mono text-sm text-muted-foreground md:mb-10 md:text-base">
+              // parcerias que viabilizam o evento
+            </p>
+            <div className="mt-2 md:mt-4">
+              <SponsorCarousel sponsors={sponsors} />
+            </div>
+          </Section>
+        </section>
+
+        {/* Localização */}
+        <Section className="relative z-[60] scroll-mt-[120px] rounded-t-3xl border-t border-border/40 bg-[#F3EFEA] py-16 shadow-[0_28px_90px_rgba(0,0,0,0.45)] md:py-20">
+          <div className="mx-auto max-w-[96rem] px-6 lg:px-10">
+            <div className="mb-2 flex items-center gap-2">
+              <Terminal size={16} className="text-emerald-700" />
+              <h2 className="font-mono text-4xl font-bold text-slate-900 md:text-5xl">
+                localização<span className="animate-blink text-emerald-700">_</span>
+              </h2>
+            </div>
+            <p className="mb-6 flex flex-wrap items-center gap-1.5 font-mono text-sm text-slate-700">
+              <MapPin size={14} className="text-emerald-700" />
               {EVENT.location.venue} — {EVENT.location.addressLine},{" "}
               {EVENT.location.city}
             </p>
@@ -708,19 +742,18 @@ export default function HomePage() {
             </motion.div>
           </div>
         </Section>
-        </div>
 
         {/* CTA */}
-        <Section className="cta-finale relative overflow-hidden border-y border-cyan-500/20 bg-gradient-to-b from-[#0b1224] via-[#141f3d] to-[#080c18] py-24 text-center shadow-[0_-40px_80px_-48px_rgba(34,211,238,0.35)]">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(34,211,238,0.12),transparent_60%)]" />
-          <div className="relative mx-auto max-w-6xl px-4">
-          <p className="mb-4 font-mono text-sm text-neon">
+        <Section className="cta-finale relative z-[70] scroll-mt-[120px] overflow-hidden rounded-t-3xl bg-[#243056] py-24 text-center shadow-[0_28px_100px_rgba(0,0,0,0.45)]">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(56,189,248,0.08),transparent_55%)]" />
+          <div className="relative mx-auto max-w-[96rem] px-6 lg:px-10">
+          <p className="mb-4 font-mono text-sm text-[#F3EFEA]/85">
             // pronto para participar?
           </p>
-          <h2 className="mb-4 font-mono text-4xl font-bold md:text-5xl">
-            garanta sua vaga<span className="animate-blink text-neon">_</span>
+          <h2 className="mb-4 font-mono text-4xl font-bold text-[#F3EFEA] md:text-5xl">
+            garanta sua vaga<span className="animate-blink text-[#F3EFEA]">_</span>
           </h2>
-          <p className="mx-auto mb-10 max-w-lg text-muted-foreground">
+          <p className="mx-auto mb-10 max-w-lg text-[#F3EFEA]/90">
             Inscrição gratuita. Prioridade para alunos da UniCesumar Londrina.
           </p>
           <motion.div
@@ -731,10 +764,10 @@ export default function HomePage() {
             <Button
               asChild
               size="lg"
-              className="bg-neon font-mono font-bold text-black hover:bg-neon/90"
+              className="h-auto border-0 bg-black px-12 py-7 font-mono text-lg font-bold text-[#F3EFEA] shadow-xl hover:bg-neutral-950 md:px-16 md:py-9 md:text-xl"
             >
               <Link href="/inscricao">
-                inscrever-se agora <ChevronRight size={16} />
+                inscrever-se agora <ChevronRight className="size-5 md:size-6" />
               </Link>
             </Button>
           </motion.div>

@@ -42,20 +42,24 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-muted/40 px-4">
-      <div className="w-full max-w-sm">
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <span className="bg-brand text-white text-xs font-bold px-2 py-1 rounded">TW</span>
-          <span className="text-2xl font-bold">Admin — Tech Week</span>
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-[#070c1a] via-[#101b35] to-[#060910] px-5 py-16 md:px-12 lg:px-16">
+      <div className="w-full max-w-[min(56rem,calc(100vw-2.5rem))]">
+        <div className="mb-10 flex flex-wrap items-center justify-center gap-3 text-center">
+          <span className="rounded bg-neon px-2.5 py-1 font-mono text-xs font-bold text-black">
+            TW
+          </span>
+          <span className="font-mono text-2xl font-bold text-foreground md:text-3xl">
+            Admin — Tech Week
+          </span>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Acesso restrito</CardTitle>
+        <Card className="border border-cyan-500/20 bg-card/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,0.65)] backdrop-blur-md">
+          <CardHeader className="space-y-1">
+            <CardTitle className="font-mono text-xl">Acesso restrito</CardTitle>
             <CardDescription>Área exclusiva para a coordenação do evento.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-1.5">
+            <form onSubmit={handleSubmit} className="space-y-5 md:grid md:grid-cols-2 md:gap-6 md:space-y-0">
+              <div className="space-y-1.5 md:col-span-2">
                 <Label htmlFor="email">E-mail</Label>
                 <Input
                   id="email"
@@ -63,10 +67,11 @@ export default function AdminLoginPage() {
                   placeholder="coordenacao@unicesumar.edu.br"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="h-11 md:text-base"
                   required
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 md:col-span-2">
                 <Label htmlFor="password">Senha</Label>
                 <Input
                   id="password"
@@ -74,12 +79,25 @@ export default function AdminLoginPage() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="h-11 md:text-base"
                   required
                 />
               </div>
-              <Button type="submit" className="w-full bg-brand hover:bg-brand/90 text-white font-semibold" disabled={loading}>
-                {loading ? <><Loader2 size={16} className="animate-spin mr-2" /> Entrando...</> : "Entrar"}
-              </Button>
+              <div className="md:col-span-2">
+                <Button
+                  type="submit"
+                  className="h-11 w-full bg-neon font-mono font-semibold text-black hover:bg-neon/90 md:h-12 md:text-base"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 size={18} className="mr-2 animate-spin" /> Entrando...
+                    </>
+                  ) : (
+                    "Entrar"
+                  )}
+                </Button>
+              </div>
             </form>
           </CardContent>
         </Card>

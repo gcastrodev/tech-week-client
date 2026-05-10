@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { InnerPageShell, InnerPageSuccess } from "@/components/inner-page-shell"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -44,8 +45,8 @@ export default function InscricaoPage() {
       toast.error("Preencha todos os campos obrigatórios.")
       return
     }
-    if (isNaN(ra) || form.student_registration.length > 9) {
-      toast.error("RA inválido. Deve conter até 9 dígitos numéricos.")
+    if (isNaN(ra) || ra < 100000000 || ra > 999999999) {
+      toast.error("RA deve ter exatamente 9 dígitos.")
       return
     }
     const period = Number(form.course_period)
@@ -85,15 +86,12 @@ export default function InscricaoPage() {
     return (
       <>
         <Navbar />
-        <main className="flex-1 flex items-center justify-center px-4 py-24">
-          <div className="text-center flex flex-col items-center gap-4">
-            <CheckCircle className="text-brand" size={64} />
-            <h1 className="text-3xl font-bold">Inscrição confirmada!</h1>
-            <p className="text-muted-foreground max-w-sm">
-              Você está inscrito na Tech Week. Até lá!
-            </p>
-          </div>
-        </main>
+        <InnerPageSuccess
+          title="Inscrição confirmada!"
+          description="Você está inscrito na Tech Week. Até lá!"
+        >
+          <CheckCircle className="mx-auto text-neon" size={72} strokeWidth={1.75} />
+        </InnerPageSuccess>
         <Footer />
       </>
     )
@@ -102,98 +100,109 @@ export default function InscricaoPage() {
   return (
     <>
       <Navbar />
-      <main className="flex-1 py-16 px-4">
-        <div className="max-w-lg mx-auto">
-          <h1 className="text-4xl font-bold mb-2">Inscrição</h1>
-          <p className="text-muted-foreground mb-8">
-            Preencha os dados abaixo para garantir sua vaga na Tech Week.
-          </p>
-          <Card>
-            <CardHeader>
-              <CardTitle>Dados do participante</CardTitle>
-              <CardDescription>Campos marcados com * são obrigatórios.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="space-y-1.5">
-                  <Label htmlFor="name">Nome completo *</Label>
-                  <Input
-                    id="name"
-                    placeholder="Seu nome"
-                    value={form.name}
-                    onChange={(e) => set("name", e.target.value)}
-                    maxLength={255}
-                    required
-                  />
-                </div>
+      <InnerPageShell
+        title="Inscrição"
+        description="Preencha os dados abaixo para garantir sua vaga na Tech Week."
+      >
+        <Card className="border border-cyan-500/20 bg-card/95 shadow-[0_28px_90px_-48px_rgba(0,0,0,0.65)] backdrop-blur-md">
+          <CardHeader>
+            <CardTitle className="font-mono text-xl">Dados do participante</CardTitle>
+            <CardDescription>Campos marcados com * são obrigatórios.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-1.5">
+                <Label htmlFor="name">Nome completo *</Label>
+                <Input
+                  id="name"
+                  placeholder="Seu nome"
+                  value={form.name}
+                  onChange={(e) => set("name", e.target.value)}
+                  maxLength={255}
+                  required
+                />
+              </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="ra">RA *</Label>
-                  <Input
-                    id="ra"
-                    placeholder="Ex: 123456789"
-                    value={form.student_registration}
-                    onChange={(e) => set("student_registration", e.target.value.replace(/\D/g, "").slice(0, 9))}
-                    inputMode="numeric"
-                    required
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="ra">RA *</Label>
+                <Input
+                  id="ra"
+                  placeholder="Ex: 123456789"
+                  value={form.student_registration}
+                  onChange={(e) =>
+                    set("student_registration", e.target.value.replace(/\D/g, "").slice(0, 9))
+                  }
+                  inputMode="numeric"
+                  required
+                />
+              </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="course">Curso *</Label>
-                  <select
-                    id="course"
-                    className="w-full border border-input rounded-md bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                    value={form.course_name}
-                    onChange={(e) => set("course_name", e.target.value)}
-                    required
-                  >
-                    <option value="">Selecione seu curso</option>
-                    {courses.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="course">Curso *</Label>
+                <select
+                  id="course"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  value={form.course_name}
+                  onChange={(e) => set("course_name", e.target.value)}
+                  required
+                >
+                  <option value="">Selecione seu curso</option>
+                  {courses.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="period">Período *</Label>
-                  <Input
-                    id="period"
-                    type="number"
-                    min={1}
-                    max={12}
-                    placeholder="Ex: 4"
-                    value={form.course_period}
-                    onChange={(e) => set("course_period", e.target.value)}
-                    required
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="period">Período *</Label>
+                <Input
+                  id="period"
+                  type="number"
+                  min={1}
+                  max={12}
+                  placeholder="Ex: 4"
+                  value={form.course_period}
+                  onChange={(e) => set("course_period", e.target.value)}
+                  required
+                />
+              </div>
 
-                <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-lg p-4">
-                  <input
-                    type="checkbox"
-                    id="coffee"
-                    className="mt-0.5 accent-brand"
-                    checked={form.coffee_break}
-                    onChange={(e) => set("coffee_break", e.target.checked)}
-                  />
-                  <label htmlFor="coffee" className="text-sm cursor-pointer">
-                    <span className="font-semibold text-amber-800">Quero participar do Coffee Break</span>
-                    <br />
-                    <span className="text-amber-700">
-                      O coffee break acontece durante o intervalo do evento.
-                    </span>
-                  </label>
-                </div>
+              <div className="flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-950/35 p-4">
+                <input
+                  type="checkbox"
+                  id="coffee"
+                  className="mt-0.5 accent-neon"
+                  checked={form.coffee_break}
+                  onChange={(e) => set("coffee_break", e.target.checked)}
+                />
+                <label htmlFor="coffee" className="cursor-pointer text-sm">
+                  <span className="font-semibold text-amber-200">Quero participar do Coffee Break</span>
+                  <br />
+                  <span className="text-amber-100/80">
+                    O coffee break acontece durante o intervalo do evento.
+                  </span>
+                </label>
+              </div>
 
-                <Button type="submit" className="w-full bg-brand hover:bg-brand/90 text-white font-semibold" disabled={loading}>
-                  {loading ? <><Loader2 size={16} className="animate-spin mr-2" /> Enviando...</> : "Confirmar inscrição"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+              <Button
+                type="submit"
+                className="w-full bg-neon font-mono font-semibold text-black hover:bg-neon/90"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={16} className="mr-2 animate-spin" /> Enviando...
+                  </>
+                ) : (
+                  "Confirmar inscrição"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </InnerPageShell>
       <Footer />
     </>
   )

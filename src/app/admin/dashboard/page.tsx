@@ -11,7 +11,7 @@ import { getRegistrations, getProjects, MOCK_REGISTRATIONS, MOCK_PROJECTS } from
 import type { Registration, Project } from "@/lib/types"
 import { Loader2, LogOut, Users, Cpu, Coffee, CheckCircle } from "lucide-react"
 
-const USE_MOCK = true
+const USE_MOCK = false
 
 export default function AdminDashboardPage() {
   const router = useRouter()
@@ -58,8 +58,8 @@ export default function AdminDashboardPage() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-[min(96rem,calc(100vw-2.5rem))] items-center justify-between px-5 md:px-10 lg:px-14">
           <div className="flex items-center gap-2 font-semibold">
             <span className="bg-brand text-white text-xs font-bold px-2 py-1 rounded">TW</span>
             <span>Admin — Tech Week</span>
@@ -75,9 +75,11 @@ export default function AdminDashboardPage() {
         </div>
       </header>
 
-      <main className="flex-1 py-10 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8">Painel de controle</h1>
+      <main className="flex-1 px-5 py-10 md:px-10 lg:px-14">
+        <div className="mx-auto w-full max-w-[min(96rem,calc(100vw-2.5rem))]">
+          <h1 className="mb-8 font-mono text-3xl font-bold tracking-tight md:text-4xl">
+            Painel de controle
+          </h1>
 
           {loading ? (
             <div className="flex justify-center py-24">
@@ -85,14 +87,14 @@ export default function AdminDashboardPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+              <div className="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
                 {[
                   { icon: Users, label: "Inscritos", value: registrations.length },
                   { icon: CheckCircle, label: "Check-ins", value: checkedIn },
                   { icon: Coffee, label: "Coffee break", value: coffeeBreak },
                   { icon: Cpu, label: "Projetos", value: projects.length },
                 ].map(({ icon: Icon, label, value }) => (
-                  <div key={label} className="border border-border rounded-lg p-5 bg-card">
+                  <div key={label} className="rounded-xl border border-border bg-card p-5 md:p-6">
                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-2">
                       <Icon size={14} /> {label}
                     </div>
@@ -108,8 +110,8 @@ export default function AdminDashboardPage() {
                 </TabsList>
 
                 <TabsContent value="inscritos">
-                  <div className="rounded-lg border border-border overflow-hidden">
-                    <table className="w-full text-sm">
+                  <div className="overflow-x-auto rounded-xl border border-border">
+                    <table className="w-full min-w-[640px] text-sm md:text-base">
                       <thead className="bg-muted/60 text-muted-foreground">
                         <tr>
                           <th className="text-left px-4 py-3 font-medium">Nome</th>
@@ -158,7 +160,7 @@ export default function AdminDashboardPage() {
                             <div className="flex-1">
                               <h3 className="font-semibold mb-1">{p.project_name}</h3>
                               <p className="text-sm text-muted-foreground mb-2">
-                                {p.name} — RA {p.student_registration}
+                                {p.submitter_name} — RA {p.submitter_registration}
                               </p>
                               <p className="text-sm leading-relaxed">{p.description}</p>
                             </div>
