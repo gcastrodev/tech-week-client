@@ -12,8 +12,7 @@ import type {
   AdminLoginResponse,
 } from "./types"
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"
-
+const BASE_URL = process.env.NEXT_PUBLIC_URL ?? "http://localhost:3000"
 /** Thrown on non-OK responses; `message` matches API `error` when present (backward compatible). */
 export class ApiError extends Error {
   readonly status: number

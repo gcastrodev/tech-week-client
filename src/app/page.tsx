@@ -645,7 +645,7 @@ export default function HomePage() {
             className="mx-auto max-w-3xl px-4 text-center"
           >
             <p className="mb-3 font-mono text-sm text-emerald-600">
-              // experiência em três noites
+              // 3 noites de imersão
             </p>
             <h2 className="mb-4 font-mono text-3xl font-bold text-foreground md:text-4xl">
               dados, inovação e{" "}
