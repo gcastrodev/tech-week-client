@@ -770,9 +770,9 @@ export default function HomePage() {
               </h2>
             </div>
             <p className="mb-12 max-w-2xl font-mono text-sm leading-relaxed text-muted-foreground md:text-base">
-              Prévia no site da Tech Week; o hub completo (perfis, bios e links)
-              será publicado em página dedicada. Submeta sua palestra até{" "}
-              {EVENT.cfp.deadlineLabel}.
+              Quem sobe ao palco traz visão de mercado, pesquisa e prática em torno
+              de inteligência artificial e tecnologia — uma vitrine das vozes que
+              moldam o debate na II Tech Week.
             </p>
             <SpeakerCarousel speakers={speakerPreview} />
           </Section>

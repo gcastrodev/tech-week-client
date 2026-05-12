@@ -1,3 +1,5 @@
+import type { SpeakerCard } from "@/components/speaker-carousel"
+
 export const EVENT = {
   edition: "II",
   name: "TECH WEEK",
@@ -176,21 +178,76 @@ export const sponsors: Sponsor[] = [
 ]
 
 /** Prévia na home — hub completo em página dedicada. */
-export const speakerPreview = [
+export const speakerPreview: SpeakerCard[] = [
   {
-    name: "A confirmar",
+    name: "Gustavo Melles",
     role: "Palestrante",
-    bio: "Os nomes e temas serão divulgados em breve.",
+    bio: "Palestrante, professor de Inteligência Artificial no MBA da PUC Paraná, colunista da CBN e criador do movimento Pense com IA.",
+    talkTopic: "Pense com IA: A Revolução da Inteligência Ampliada",
+    photoSrc: "/speakers/gustavo-melles.png",
+    photoAlt: "Gustavo Melles — palestrante da Tech Week",
+    statusBadge: "confirmado",
+    socials: [
+      {
+        network: "instagram",
+        href: "https://www.instagram.com/gusmelles/",
+        label: "@gusmelles",
+      },
+      {
+        network: "linkedin",
+        href: "https://www.linkedin.com/in/gustavomelles/",
+        label: "linkedin.com/in/gustavomelles",
+      },
+      {
+        network: "phone",
+        href: "tel:+5543996814914",
+        label: "43 99681-4914",
+        hint: "número pessoal",
+      },
+    ],
   },
   {
-    name: "A confirmar",
+    name: "Huander Tironi",
     role: "Palestrante",
-    bio: "Acompanhe as redes da organização para novidades.",
+    bio: "Huander Tironi | Head de IA na Bankme, empreendedor e especialista em arquitetura de software. Mestre e doutorando em IA e Segurança da Informação, conecta pesquisa científica e prática de mercado para desenvolver soluções escaláveis de Machine Learning e automação desde 2009.",
+    talkTopic: "Inteligência Artificial Aplicada",
+    photoSrc: "/speakers/huander-tironi.png",
+    photoAlt: "Huander Tironi — palestrante da Tech Week",
+    statusBadge: "confirmado",
+    socials: [
+      {
+        network: "instagram",
+        href: "https://www.instagram.com/coding_tironi/",
+        label: "@coding_tironi",
+      },
+      {
+        network: "linkedin",
+        href: "https://www.linkedin.com/in/huandertironi/",
+        label: "linkedin.com/in/huandertironi",
+      },
+    ],
   },
   {
-    name: "A confirmar",
+    name: "Jessy Borges Ferracioli",
     role: "Palestrante",
-    bio: "Submeta sua palestra até a data limite do edital.",
+    bio: "Advogada há mais de 10 anos, atualmente advogo em uma empresa do ramo de licitações públicas. Sou pós-graduada em Direito Civil e Processo Civil, mestre em Direito, Sociedades e Tecnologia, e pesquisadora de direito e inteligência artificial na Lawgorithm, do núcleo IA e Raça.",
+    talkTopic:
+      "Os data taggers e o trabalho invisível por trás da Inteligência Artificial",
+    photoSrc: "/speakers/jessy-borges-ferracioli.png",
+    photoAlt: "Jessy Borges Ferracioli — palestrante da Tech Week",
+    statusBadge: "confirmado",
+    socials: [
+      {
+        network: "instagram",
+        href: "https://www.instagram.com/jessybofer/",
+        label: "@jessybofer",
+      },
+      {
+        network: "linkedin",
+        href: "https://www.linkedin.com/in/jessy-borges-ferracioli/",
+        label: "linkedin.com/in/jessy-borges-ferracioli",
+      },
+    ],
   },
   {
     name: "A confirmar",
@@ -207,4 +264,4 @@ export const speakerPreview = [
     role: "Palestrante",
     bio: "Em breve: perfis completos e fotos.",
   },
-] as const
+]
