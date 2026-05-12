@@ -85,9 +85,9 @@ export function BinaryRain() {
 
     function buildAll() {
       layers = [
-        buildLayer(9, 0.32, 188, 1.2, 0.78, [0.35, 0.85]),
-        buildLayer(15, 0.62, 178, 0.4, 0.55, [1.1, 2.2]),
-        buildLayer(24, 0.95, 168, 0, 0.32, [2.4, 4.4]),
+        buildLayer(9, 0.32, 188, 1.2, 0.78, [0.42, 1.02]),
+        buildLayer(15, 0.62, 178, 0.4, 0.55, [1.32, 2.64]),
+        buildLayer(24, 0.95, 168, 0, 0.32, [2.88, 5.28]),
       ]
     }
 
