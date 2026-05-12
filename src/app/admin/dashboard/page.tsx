@@ -6,10 +6,80 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
 import { getRegistrations, getProjects, isAdminSessionAuthError } from "@/lib/api"
 import type { Registration, Project } from "@/lib/types"
-import { Loader2, LogOut, Users, Cpu, Coffee, CheckCircle } from "lucide-react"
+import { LogOut, Users, Cpu, Coffee, CheckCircle } from "lucide-react"
+
+function DashboardSkeleton() {
+  return (
+    <>
+      <div className="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="rounded-xl border border-border bg-card p-5 md:p-6">
+            <Skeleton className="mb-2 h-4 w-28" />
+            <Skeleton className="h-9 w-12" />
+          </div>
+        ))}
+      </div>
+      <div className="mb-6 flex flex-wrap gap-2">
+        <Skeleton className="h-9 w-[min(100%,14rem)] rounded-lg sm:w-56" />
+        <Skeleton className="h-9 w-[min(100%,13rem)] rounded-lg sm:w-52" />
+      </div>
+      <div className="overflow-x-auto rounded-xl border border-border">
+        <table className="w-full min-w-[640px] text-sm md:text-base">
+          <thead className="bg-muted/60">
+            <tr>
+              <th className="px-4 py-3 text-left">
+                <Skeleton className="h-4 w-16" />
+              </th>
+              <th className="px-4 py-3 text-left">
+                <Skeleton className="h-4 w-10" />
+              </th>
+              <th className="hidden px-4 py-3 text-left md:table-cell">
+                <Skeleton className="h-4 w-14" />
+              </th>
+              <th className="hidden px-4 py-3 text-center md:table-cell">
+                <Skeleton className="mx-auto h-4 w-16" />
+              </th>
+              <th className="px-4 py-3 text-center">
+                <Skeleton className="mx-auto h-4 w-14" />
+              </th>
+              <th className="px-4 py-3 text-center">
+                <Skeleton className="mx-auto h-4 w-16" />
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {Array.from({ length: 8 }).map((_, row) => (
+              <tr key={row}>
+                <td className="px-4 py-3">
+                  <Skeleton className="h-4 w-[min(100%,12rem)]" />
+                </td>
+                <td className="px-4 py-3">
+                  <Skeleton className="h-4 w-24" />
+                </td>
+                <td className="hidden px-4 py-3 md:table-cell">
+                  <Skeleton className="h-4 w-32" />
+                </td>
+                <td className="hidden px-4 py-3 text-center md:table-cell">
+                  <Skeleton className="mx-auto h-4 w-8" />
+                </td>
+                <td className="px-4 py-3 text-center">
+                  <Skeleton className="mx-auto h-6 w-12 rounded-full" />
+                </td>
+                <td className="px-4 py-3 text-center">
+                  <Skeleton className="mx-auto h-6 w-14 rounded-full" />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )
+}
 
 export default function AdminDashboardPage() {
   const router = useRouter()
@@ -74,9 +144,7 @@ export default function AdminDashboardPage() {
           </h1>
 
           {loading ? (
-            <div className="flex justify-center py-24">
-              <Loader2 className="animate-spin text-brand" size={36} />
-            </div>
+            <DashboardSkeleton />
           ) : (
             <>
               <div className="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
