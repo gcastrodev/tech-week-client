@@ -249,19 +249,4 @@ export const speakerPreview: SpeakerCard[] = [
       },
     ],
   },
-  {
-    name: "A confirmar",
-    role: "Palestrante",
-    bio: "Experiências da indústria e da academia.",
-  },
-  {
-    name: "A confirmar",
-    role: "Palestrante",
-    bio: "IA aplicada a produtos e serviços reais.",
-  },
-  {
-    name: "A confirmar",
-    role: "Palestrante",
-    bio: "Em breve: perfis completos e fotos.",
-  },
 ]
