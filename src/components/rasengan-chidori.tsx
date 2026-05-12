@@ -92,7 +92,7 @@ export function RasenganChidori() {
       // Espirais (3 camadas)
       for (let i = 0; i < 4; i++) {
         g.beginPath()
-        const startAngle = time * 5.8 + (i * Math.PI * 2) / 4
+        const startAngle = time * 4.5 + (i * Math.PI * 2) / 4
         for (let a = 0; a < Math.PI * 2; a += 0.06) {
           const sr = r * 0.15 + r * 0.8 * (a / (Math.PI * 2))
           const sx = x + sr * Math.cos(a + startAngle)
@@ -132,23 +132,23 @@ export function RasenganChidori() {
 
       // Raios elétricos longos saindo do núcleo
       for (let i = 0; i < 12; i++) {
-        const angle = (i / 12) * Math.PI * 2 + time * 9.2
+        const angle = (i / 12) * Math.PI * 2 + time * 7.1
         g.beginPath(); g.moveTo(x, yPos)
         let lx = x; let ly = yPos
         const steps = 5
         for (let s = 0; s < steps; s++) {
-          const jitter = (hash01(i * 19 + s * 7 + Math.floor(time * 20)) - 0.5) * 2.2
-          const len = r * (0.25 + hash01(i * 31 + s * 11 + Math.floor(time * 15)) * 0.5)
+          const jitter = (hash01(i * 19 + s * 7 + Math.floor(time * 15)) - 0.5) * 2.2
+          const len = r * (0.25 + hash01(i * 31 + s * 11 + Math.floor(time * 11)) * 0.5)
           lx += Math.cos(angle + jitter) * len
           ly += Math.sin(angle + jitter) * len
           g.lineTo(lx, ly)
         }
-        g.strokeStyle = `rgba(245,210,255,${0.72 + 0.25 * hash01(i + Math.floor(time * 8))})`
+        g.strokeStyle = `rgba(245,210,255,${0.72 + 0.25 * hash01(i + Math.floor(time * 6))})`
         g.lineWidth = 2.2; g.stroke()
       }
 
       // Anel pulsante
-      const pr = r * (1.05 + 0.08 * Math.sin(time * 8))
+      const pr = r * (1.05 + 0.08 * Math.sin(time * 6))
       g.beginPath(); g.arc(x, yPos, pr, 0, Math.PI * 2)
       g.strokeStyle = "rgba(200,100,255,0.5)"
       g.lineWidth = 3; g.stroke()
@@ -179,7 +179,7 @@ export function RasenganChidori() {
         const eased = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p // ease in-out
         rasenX = -BASE_R * 2.5 + (W * 0.38 + BASE_R * 2.5) * eased
         chidoriX = W + BASE_R * 2.5 - (W + BASE_R * 2.5 - W * 0.62) * eased
-        baseR = BASE_R * (0.85 + 0.15 * Math.sin(t * 2))
+        baseR = BASE_R * (0.85 + 0.15 * Math.sin(t * 1.55))
         drawRasengan(g, rasenX, cy, baseR, t)
         drawChidori(g, chidoriX, cy, baseR, t)
       } else if (cycle < 3.15) {
@@ -230,7 +230,7 @@ export function RasenganChidori() {
       }
       // pausa curta antes de reiniciar
 
-      t += 0.046
+      t += 0.036
       raf = requestAnimationFrame(draw)
     }
 
