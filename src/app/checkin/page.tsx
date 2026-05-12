@@ -19,22 +19,22 @@ export default function CheckinPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const raNum = Number(ra)
-    if (isNaN(raNum) || raNum < 100000000 || raNum > 999999999) {
+    const digits = ra.trim()
+    if (!/^\d{9}$/.test(digits)) {
       toast.error("RA deve ter exatamente 9 dígitos.")
       return
     }
 
     setLoading(true)
     try {
-      await postCheckin({ student_registration: raNum })
+      await postCheckin({ student_registration: digits })
       setDone(true)
       toast.success("Check-in confirmado!")
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : ""
       if (msg === "ra_not_found") {
         toast.error("RA não encontrado. Você está inscrito?")
-      } else if (msg === "invalid_ra") {
+      } else if (msg === "invalid_student_registration") {
         toast.error("RA inválido.")
       } else {
         toast.error("Erro ao realizar check-in.")

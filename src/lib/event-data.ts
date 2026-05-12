@@ -105,8 +105,62 @@ export type Sponsor = {
   href?: string
 }
 
-/** Patrocinadores — inclua o arquivo em /public/sponsors quando disponível. */
+/** Patrocinadores — inclua o arquivo em /public/sponsors quando disponível. (CACO em destaque: primeiro na lista.) */
 export const sponsors: Sponsor[] = [
+  {
+    name: "CACO Alimentação",
+    tier: "apoio",
+    logoSrc: "/sponsors/caco.png",
+    logoAlt: "Logo CACO Alimentação",
+  },
+  {
+    name: "Minas Casa Empório",
+    tier: "apoio",
+    logoSrc: "/sponsors/minas-casa-emporio.png",
+    logoAlt: "Logo Minas Casa Empório",
+  },
+  {
+    name: "ESTMA",
+    tier: "apoio",
+    logoSrc: "/sponsors/estma.png",
+    logoAlt: "Logo ESTMA — Engenharia e Saúde do Trabalho e Meio Ambiente",
+  },
+  {
+    name: "Zona Country",
+    tier: "apoio",
+    logoSrc: "/sponsors/zona-country.png",
+    logoAlt: "Logo Zona Country",
+  },
+  {
+    name: "Óculos Express",
+    tier: "apoio",
+    logoSrc: "/sponsors/oculos-express.png",
+    logoAlt: "Logo Óculos Express",
+  },
+  {
+    name: "M2 Centro Automotivo",
+    tier: "apoio",
+    logoSrc: "/sponsors/m2-centro-automotivo.png",
+    logoAlt: "Logo M2 Centro Automotivo",
+  },
+  {
+    name: "Veículo Rastreado",
+    tier: "apoio",
+    logoSrc: "/sponsors/veiculo-rastreado.png",
+    logoAlt: "Logo Veículo Rastreado",
+  },
+  {
+    name: "Quali Mais",
+    tier: "apoio",
+    logoSrc: "/sponsors/quali-mais.png",
+    logoAlt: "Logo Quali Mais",
+  },
+  {
+    name: "Hanke Digital Solutions",
+    tier: "apoio",
+    logoSrc: "/sponsors/hanke.png",
+    logoAlt: "Logo Hanke digital solutions",
+  },
   {
     name: "Adilson",
     tier: "apoio",
@@ -116,14 +170,8 @@ export const sponsors: Sponsor[] = [
   {
     name: "Vitório's Restaurante",
     tier: "apoio",
-    logoSrc: undefined,
-    logoAlt: "Vitório's Restaurante",
-  },
-  {
-    name: "CACO Alimentação",
-    tier: "apoio",
-    logoSrc: "/sponsors/caco.png",
-    logoAlt: "Logo CACO Alimentação",
+    logoSrc: "/sponsors/vitorios-restaurante.png",
+    logoAlt: "Logo Vitório's Restaurante",
   },
 ]
 

@@ -1,141 +1,87 @@
 # Tech Week — Frontend
 
-Este repositório contém apenas o frontend do sistema Tech Week da UniCesumar Londrina.
-O backend está sendo desenvolvido separadamente pela equipe do Guilherme.
+Repositório **apenas do frontend** do sistema Tech Week da UniCesumar Londrina. O backend (API REST) vive noutro projeto (ex.: Rust/Axum).
 
 ## Visão geral
 
-- Framework: **Next.js 16 (App Router)**
-- Linguagem: **TypeScript**
-- Estilização: **Tailwind CSS**, **shadcn/ui**
-- Interações: **React**, **motion**, **three.js**
-- Frontend apenas: as chamadas de API são feitas para um backend externo
+- **Next.js 16** (App Router), **TypeScript**, **Tailwind CSS 4**, **shadcn/ui**
+- Animações: **motion**, scroll suave (**Lenis**), efeitos em canvas 2D; **Three.js** via **React Three Fiber** onde usado
+- Dados estáticos do evento (agenda, patrocinadores, textos da home): `src/lib/event-data.ts`
+- Integração HTTP: `src/lib/api.ts` → ver **`CONTRACT.md`** para payloads, códigos HTTP e erros (`error`)
 
-## Funcionalidades implementadas
+## Funcionalidades
 
-- Página principal com hero animado e informações do evento
-- Página de inscrição de participantes (`/inscricao`)
-- Página de submissão de projetos (`/projetos`)
-- Página de check-in de presença (`/checkin`)
-- Dashboard administrativo com login (`/admin/login` e `/admin/dashboard`)
-- Suporte a mock data para testes sem backend
-- Uso de componentes UI reutilizáveis em `src/components/ui`
+- Homepage com hero, secções do evento e efeitos visuais
+- **`/inscricao`** — inscrição de participantes (`POST /registrations`)
+- **`/projetos`** — submissão de projetos (`POST /projects`)
+- **`/checkin`** — check-in por RA (`POST /checkin`)
+- **`/admin/login`** + **`/admin/dashboard`** — JWT em `localStorage` (`admin_token`); listagens `GET /registrations` e `GET /projects` com `Authorization: Bearer`
+- **`/faq`** — perguntas frequentes
 
-## Estrutura principal do projeto
+## Estrutura útil
 
-- `src/app/`
-  - `page.tsx` — homepage do evento
-  - `admin/login/page.tsx` — login da área administrativa
-  - `admin/dashboard/page.tsx` — painel admin de inscrições e projetos
-  - `inscricao/page.tsx` — formulário de inscrição de participantes
-  - `projetos/page.tsx` — formulário de submissão de projetos
-  - `checkin/page.tsx` — registro de presença por RA
-  - `faq/page.tsx` — página de perguntas frequentes
-- `src/components/` — componentes compartilhados do layout
-- `src/components/ui/` — componentes gerados shadcn/ui
-- `src/lib/api.ts` — cliente de API e mocks
-- `src/lib/types.ts` — tipos TypeScript para payloads e modelos
-- `src/lib/event-data.ts` — dados do evento, agenda e patrocinadores
-- `public/` — imagens e assets públicos
+| Caminho | Descrição |
+|--------|-----------|
+| `src/app/` | Rotas e páginas (App Router) |
+| `src/components/` | Componentes partilhados (fora de `ui/`) |
+| `src/components/ui/` | shadcn/ui — **não editar à mão** |
+| `src/lib/api.ts` | Cliente `fetch` para o backend |
+| `src/lib/types.ts` | Tipos alinhados ao `CONTRACT.md` |
+| `src/lib/event-data.ts` | Conteúdo editorial do site (agenda, patrocinadores, datas) |
+| `CONTRACT.md` | Contrato oficial da API com o frontend |
 
 ## Pré-requisitos
 
-- Node.js 20+ instalado
-- `npm` disponível no terminal
-- Backend do Guilherme rodando ou `NEXT_PUBLIC_API_URL` apontando para o servidor de API
+- **Node.js 20+**
+- **npm**
+- API acessível na URL configurada em **`NEXT_PUBLIC_API_URL`**, com **CORS** permitindo a origem do Next (ver comentário no topo de `src/lib/api.ts`)
 
 ## Uso local
 
-1. Instale dependências:
-
 ```bash
 npm install
-```
-
-2. Execute o servidor de desenvolvimento:
-
-```bash
 npm run dev
 ```
 
-3. Abra o app em:
+Abrir `http://localhost:3000` (porta padrão do Next).
+
+### Variáveis de ambiente
+
+Crie `.env.local` (não commitar segredos):
 
 ```bash
-http://localhost:3000
+# URL base da API (sem barra final). Use uma porta diferente da do Next se ambos correrem na mesma máquina.
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8080
 ```
 
-## Configuração do backend
+O fallback em código é `http://localhost:3000`; se o Next também usar a porta **3000**, defina sempre `NEXT_PUBLIC_API_URL` para a porta real do backend.
 
-O frontend consome as APIs do backend via `src/lib/api.ts`.
-Por padrão, o `BASE_URL` é definido como:
+## Rotas
 
-```ts
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"
-```
+| Rota | Função |
+|------|--------|
+| `/` | Homepage |
+| `/inscricao` | Inscrição |
+| `/projetos` | Submissão de projetos |
+| `/checkin` | Check-in |
+| `/admin/login` | Login admin |
+| `/admin/dashboard` | Painel (requer token) |
+| `/faq` | FAQ |
 
-### Variáveis de ambiente úteis
+## API (resumo)
 
-- `NEXT_PUBLIC_API_URL` — URL base do backend
+Detalhe completo em **`CONTRACT.md`**. Resumo:
 
-> Observação: enquanto o backend ainda está em desenvolvimento, o `AdminDashboard` está configurado para usar `USE_MOCK = true` em `src/lib/event-data.ts`.
-> Assim, os dados exibidos no painel administrativo são mockados até o backend estar pronto.
+- `POST /registrations`, `POST /projects`, `POST /checkin`, `POST /admin/login`
+- `GET /registrations`, `GET /projects` — **JWT obrigatório**
 
-## Rotas principais
+## Equipa / deploy
 
-- `/` — homepage
-- `/inscricao` — inscrição de participantes
-- `/projetos` — submissão de projetos
-- `/checkin` — check-in de participantes
-- `/admin/login` — login administrativo
-- `/admin/dashboard` — dashboard administrativo
-- `/faq` — perguntas frequentes
+- Backend: repositório separado (ex.: equipa do Guilherme).
+- **Vercel (ou similar):** definir `NEXT_PUBLIC_API_URL` nas variáveis de ambiente; build `npm run build`, start `npm run start`.
 
-## APIs de frontend
+## Observações para contribuintes
 
-O frontend espera as seguintes rotas no backend:
-
-- `POST /registrations` — cadastrar inscrição
-- `POST /projects` — cadastrar projeto
-- `POST /checkin` — registrar presença
-- `POST /admin/login` — autenticar admin
-- `GET /registrations` — listar inscrições (admin)
-- `GET /projects` — listar projetos (admin)
-
-## Desenvolvedor
-
-- Guilherme: backend
-- Este repositório: frontend
-
-## Deploy
-
-O projeto pode ser implantado em qualquer plataforma compatível com Next.js, como Vercel.
-
-### Deploy no Vercel
-
-1. Conecte o repositório ao Vercel.
-2. Defina a variável de ambiente `NEXT_PUBLIC_API_URL` para a URL do backend em _Environment Variables_.
-3. Configure o comando de build padrão:
-
-```bash
-npm run build
-```
-
-4. Configure o comando de start padrão:
-
-```bash
-npm run start
-```
-
-### Deploy local com backend
-
-Se o backend estiver rodando localmente, use:
-
-```bash
-NEXT_PUBLIC_API_URL=http://localhost:3000 npm run dev
-```
-
-## Observações
-
-- Não editar manualmente `src/components/ui/`, pois são componentes gerados pela configuração do `shadcn/ui`.
-- O estilo global e as cores da marca estão definidos em `src/app/globals.css`.
-- Mantenha a separação frontend/backend clara: este repositório só serve a interface do evento.
+- Não editar `src/components/ui/` nem `src/lib/utils.ts` (shadcn).
+- Cores de marca: variável `--brand` e tokens em `src/app/globals.css`.
+- Commits em **inglês**, [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, `perf:`, etc.).

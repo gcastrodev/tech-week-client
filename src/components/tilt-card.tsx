@@ -43,7 +43,10 @@ export function TiltCard({
   }
 
   return (
-    <div className="perspective-[1000px]" style={{ perspective: 1000 }}>
+    <div
+      className="perspective-[1000px] h-full w-full min-h-0"
+      style={{ perspective: 1000 }}
+    >
       <motion.div
         ref={ref}
         style={{
@@ -53,7 +56,7 @@ export function TiltCard({
         }}
         onMouseMove={onMove}
         onMouseLeave={onLeave}
-        className={cn("will-change-transform", className)}
+        className={cn("h-full min-h-0 w-full will-change-transform", className)}
       >
         {children}
       </motion.div>

@@ -7,11 +7,9 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
-import { getRegistrations, getProjects, MOCK_REGISTRATIONS, MOCK_PROJECTS } from "@/lib/api"
+import { getRegistrations, getProjects } from "@/lib/api"
 import type { Registration, Project } from "@/lib/types"
 import { Loader2, LogOut, Users, Cpu, Coffee, CheckCircle } from "lucide-react"
-
-const USE_MOCK = false
 
 export default function AdminDashboardPage() {
   const router = useRouter()
@@ -21,7 +19,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("admin_token")
-    if (!token && !USE_MOCK) {
+    if (!token) {
       router.replace("/admin/login")
       return
     }
@@ -31,15 +29,9 @@ export default function AdminDashboardPage() {
   async function loadData() {
     setLoading(true)
     try {
-      if (USE_MOCK) {
-        await new Promise((r) => setTimeout(r, 600))
-        setRegistrations(MOCK_REGISTRATIONS)
-        setProjects(MOCK_PROJECTS)
-      } else {
-        const [regs, projs] = await Promise.all([getRegistrations(), getProjects()])
-        setRegistrations(regs)
-        setProjects(projs)
-      }
+      const [regs, projs] = await Promise.all([getRegistrations(), getProjects()])
+      setRegistrations(regs)
+      setProjects(projs)
     } catch {
       toast.error("Erro ao carregar dados. Faça login novamente.")
       router.replace("/admin/login")
@@ -63,11 +55,6 @@ export default function AdminDashboardPage() {
           <div className="flex items-center gap-2 font-semibold">
             <span className="bg-brand text-white text-xs font-bold px-2 py-1 rounded">TW</span>
             <span>Admin — Tech Week</span>
-            {USE_MOCK && (
-              <Badge variant="outline" className="text-amber-600 border-amber-400 ml-2 text-xs">
-                dados mock
-              </Badge>
-            )}
           </div>
           <Button variant="ghost" size="sm" onClick={logout} className="gap-1.5 text-muted-foreground">
             <LogOut size={14} /> Sair

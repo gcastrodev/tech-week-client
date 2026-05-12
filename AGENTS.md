@@ -1,21 +1,34 @@
 # Tech Week — UniCesumar Londrina
 
 ## About
-Full-stack application for UniCesumar Londrina's Tech Week event.
-Frontend: Next.js 16 App Router, TypeScript, Tailwind CSS, shadcn/ui.
-Backend: separate repo (tech-week-api), Rust, Axum, SQLite.
+
+**Frontend-only** Next.js 16 (App Router) app for the Tech Week site. Backend is a separate API; the HTTP contract lives in **`CONTRACT.md`**.
 
 ## Running locally
+
+```bash
 npm run dev
+```
+
+Use `.env.local` with `NEXT_PUBLIC_API_URL` pointing at the API. CORS must allow the Next dev origin.
 
 ## Project structure
-- src/app — pages following Next.js App Router
-- src/components — shared components
-- src/components/ui — shadcn/ui components, do not edit
-- src/lib/types.ts — TypeScript types based on API contract
-- src/lib/api.ts — API client and mock data
+
+- `src/app` — routes and pages (App Router)
+- `src/components` — shared UI (not `ui/`)
+- `src/components/ui` — shadcn/ui — **do not edit**
+- `src/lib/api.ts` — `fetch` client; base URL from `NEXT_PUBLIC_API_URL`
+- `src/lib/types.ts` — request/response types aligned with **`CONTRACT.md`**
+- `src/lib/event-data.ts` — static event copy, schedule, sponsors (site content, not API seed data)
+- `CONTRACT.md` — API contract (endpoints, JSON fields, status codes, `error` codes)
 
 ## Notes
-- Brand colors via --brand CSS variable in globals.css
-- Set USE_MOCK = false in admin dashboard when backend is ready
-- Commits follow conventional commits spec
+
+- Brand colors via `--brand` in `src/app/globals.css`
+- Admin dashboard calls real `GET` endpoints with JWT from login (`localStorage` key `admin_token`)
+- Commits: Conventional Commits in English
+
+## Do not edit
+
+- `src/components/ui/`
+- `src/lib/utils.ts`

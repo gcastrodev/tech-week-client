@@ -1,17 +1,29 @@
 "use client"
 
 import { useRef, useEffect } from "react"
+import {
+  usePageVisibility,
+  usePageVisibilityRef,
+} from "@/hooks/use-page-visibility"
+import { observeViewport } from "@/lib/observe-viewport"
 
 export function NeuralNetwork() {
+  const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const pageVisible = usePageVisibility()
+  const pageVisibleRef = usePageVisibilityRef(pageVisible)
+  const viewportOkRef = useRef(false)
 
   useEffect(() => {
-    if (!canvasRef.current?.getContext("2d")) return
+    const wrap = wrapRef.current
+    const c = canvasRef.current
+    if (!wrap || !c?.getContext("2d")) return
 
     let raf = 0
     let t = 0
+    let frameSkip = 0
 
-    const nodes = Array.from({ length: 45 }, (_, i) => {
+    const nodes = Array.from({ length: 18 }, (_, i) => {
       const seed = i * 137.508
       return {
         x: (Math.sin(seed) * 0.5 + 0.5) * 0.85 + 0.075,
@@ -32,6 +44,7 @@ export function NeuralNetwork() {
     }
 
     const intervalId = window.setInterval(() => {
+      if (!pageVisibleRef.current || !viewportOkRef.current) return
       const a = Math.floor(rnd() * nodes.length)
       const b = Math.floor(rnd() * nodes.length)
       if (a !== b)
@@ -41,30 +54,67 @@ export function NeuralNetwork() {
           t: 0,
           speed: 0.012 + rnd() * 0.015,
         })
-      if (pulses.length > 25) pulses.shift()
-    }, 300)
+      if (pulses.length > 18) pulses.shift()
+    }, 360)
 
     function resize() {
-      const c = canvasRef.current
-      const g = c?.getContext("2d")
-      if (!c || !g) return
+      const canvas = canvasRef.current
+      const g = canvas?.getContext("2d")
+      if (!canvas || !g) return
       const dpr = window.devicePixelRatio || 1
-      const w = c.offsetWidth
-      const h = c.offsetHeight
-      c.width = Math.max(1, Math.floor(w * dpr))
-      c.height = Math.max(1, Math.floor(h * dpr))
+      const w = canvas.offsetWidth
+      const h = canvas.offsetHeight
+      canvas.width = Math.max(1, Math.floor(w * dpr))
+      canvas.height = Math.max(1, Math.floor(h * dpr))
       g.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
 
     resize()
     window.addEventListener("resize", resize)
 
+    const stop = () => {
+      if (raf) cancelAnimationFrame(raf)
+      raf = 0
+    }
+
+    const start = () => {
+      if (raf) return
+      if (!pageVisibleRef.current || !viewportOkRef.current) return
+      raf = requestAnimationFrame(draw)
+    }
+
+    const unobViewport = observeViewport(
+      wrap,
+      (v) => {
+        viewportOkRef.current = v
+        if (v) start()
+        else stop()
+      },
+      "140px 0px 240px 0px"
+    )
+
+    const onVis = () => {
+      pageVisibleRef.current = document.visibilityState === "visible"
+      if (pageVisibleRef.current && viewportOkRef.current) start()
+      else stop()
+    }
+    document.addEventListener("visibilitychange", onVis)
+
     function draw() {
-      const c = canvasRef.current
-      const g = c?.getContext("2d")
-      if (!c || !g) return
-      const W = c.offsetWidth
-      const H = c.offsetHeight
+      raf = 0
+      if (!pageVisibleRef.current || !viewportOkRef.current) return
+      const canvas = canvasRef.current
+      const g = canvas?.getContext("2d")
+      if (!canvas || !g) return
+
+      frameSkip++
+      if (frameSkip % 3 === 0) {
+        raf = requestAnimationFrame(draw)
+        return
+      }
+
+      const W = canvas.offsetWidth
+      const H = canvas.offsetHeight
       g.clearRect(0, 0, W, H)
 
       const pts = nodes.map((n) => ({
@@ -75,12 +125,14 @@ export function NeuralNetwork() {
         color: n.color,
       }))
 
+      const linkDistSq = 200 * 200
       for (let i = 0; i < pts.length; i++) {
         for (let j = i + 1; j < pts.length; j++) {
           const dx = pts[i].x - pts[j].x
           const dy = pts[i].y - pts[j].y
-          const dist = Math.sqrt(dx * dx + dy * dy)
-          if (dist < 200) {
+          const distSq = dx * dx + dy * dy
+          if (distSq < linkDistSq) {
+            const dist = Math.sqrt(distSq)
             const alpha = (1 - dist / 200) * 0.62
             g.beginPath()
             g.moveTo(pts[i].x, pts[i].y)
@@ -122,28 +174,35 @@ export function NeuralNetwork() {
         g.arc(n.x, n.y, r, 0, Math.PI * 2)
         g.fillStyle = n.color
         g.shadowColor = n.color
-        g.shadowBlur = 22
+        g.shadowBlur = 12
         g.fill()
         g.shadowBlur = 0
       })
 
-      t += 0.016
+      t += 0.032
       raf = requestAnimationFrame(draw)
     }
 
-    draw()
+    start()
 
     return () => {
-      cancelAnimationFrame(raf)
+      stop()
+      unobViewport()
+      document.removeEventListener("visibilitychange", onVis)
       window.clearInterval(intervalId)
       window.removeEventListener("resize", resize)
     }
   }, [])
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none absolute inset-0 z-0 h-full w-full opacity-[0.72]"
-    />
+    <div
+      ref={wrapRef}
+      className="pointer-events-none absolute inset-0 z-0 h-full w-full"
+    >
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 h-full w-full opacity-[0.72]"
+      />
+    </div>
   )
 }

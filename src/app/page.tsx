@@ -26,6 +26,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { MountWhenInView } from "@/components/mount-when-in-view"
+import { LazyMapEmbed } from "@/components/lazy-map-embed"
 import { SpeakerCarousel } from "@/components/speaker-carousel"
 import { SponsorCarousel } from "@/components/sponsor-carousel"
 import {
@@ -35,6 +37,11 @@ import {
   speakerPreview,
   type ScheduleType,
 } from "@/lib/event-data"
+import {
+  usePageVisibility,
+  usePageVisibilityRef,
+} from "@/hooks/use-page-visibility"
+import { observeViewport } from "@/lib/observe-viewport"
 
 const MatrixRain = dynamic(
   () => import("@/components/matrix-rain").then((m) => m.MatrixRain),
@@ -118,45 +125,91 @@ const CAROUSEL_ROW_2 = [
 ]
 
 function InfiniteCarousel() {
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const pageVisible = usePageVisibility()
+  const pageVisibleRef = usePageVisibilityRef(pageVisible)
+  const viewportOkRef = useRef(false)
   const row1Ref = useRef<HTMLDivElement>(null)
   const row2Ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const speed1 = 0.4   // fileira de cima: mais lenta (vai para esquerda)
-    const speed2 = 0.7   // fileira de baixo: mais rápida (vai para direita)
+    const wrap = wrapRef.current
+    if (!wrap) return
+
+    const speed1 = 0.4
+    const speed2 = 0.7
     let x1 = 0
     let x2 = 0
-    let raf: number
+    let raf = 0
 
-    function tick() {
+    const stop = () => {
+      if (raf) cancelAnimationFrame(raf)
+      raf = 0
+    }
+
+    const tick = () => {
+      raf = 0
+      if (!pageVisibleRef.current || !viewportOkRef.current) return
+
       x1 -= speed1
       x2 += speed2
 
       const r1 = row1Ref.current
       const r2 = row2Ref.current
-      if (!r1 || !r2) { raf = requestAnimationFrame(tick); return }
+      if (r1 && r2) {
+        const half1 = r1.scrollWidth / 2
+        const half2 = r2.scrollWidth / 2
 
-      const half1 = r1.scrollWidth / 2
-      const half2 = r2.scrollWidth / 2
+        if (Math.abs(x1) >= half1) x1 = 0
+        if (x2 >= half2) x2 = 0
 
-      if (Math.abs(x1) >= half1) x1 = 0
-      if (x2 >= half2) x2 = 0
-
-      r1.style.transform = `translateX(${x1}px)`
-      r2.style.transform = `translateX(${x2}px)`
+        r1.style.transform = `translateX(${x1}px)`
+        r2.style.transform = `translateX(${x2}px)`
+      }
 
       raf = requestAnimationFrame(tick)
     }
 
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
+    const start = () => {
+      if (raf) return
+      if (!pageVisibleRef.current || !viewportOkRef.current) return
+      raf = requestAnimationFrame(tick)
+    }
+
+    const unob = observeViewport(
+      wrap,
+      (v) => {
+        viewportOkRef.current = v
+        if (v) start()
+        else stop()
+      },
+      "80px 0px 100px 0px"
+    )
+
+    const onVis = () => {
+      pageVisibleRef.current = document.visibilityState === "visible"
+      if (pageVisibleRef.current && viewportOkRef.current) start()
+      else stop()
+    }
+    document.addEventListener("visibilitychange", onVis)
+
+    start()
+
+    return () => {
+      stop()
+      unob()
+      document.removeEventListener("visibilitychange", onVis)
+    }
   }, [])
 
   const items1 = [...CAROUSEL_ROW_1, ...CAROUSEL_ROW_1, ...CAROUSEL_ROW_1]
   const items2 = [...CAROUSEL_ROW_2, ...CAROUSEL_ROW_2, ...CAROUSEL_ROW_2]
 
   return (
-    <div className="relative overflow-hidden py-6 pb-8 select-none">
+    <div
+      ref={wrapRef}
+      className="relative overflow-hidden py-6 pb-8 select-none"
+    >
       {/* Fade nas bordas */}
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32 bg-gradient-to-r from-background to-transparent" />
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-32 bg-gradient-to-l from-background to-transparent" />
@@ -206,17 +259,34 @@ export default function HomePage() {
   const palestranthesRef = useRef<HTMLElement>(null)
   const patrocinoresRef = useRef<HTMLElement>(null)
   const [heroFxReady, setHeroFxReady] = useState(false)
+  /** Hero em coluna única (átomo abaixo do texto) — breakpoint igual ao `lg:grid-cols` do hero. */
+  const [heroStackedLayout, setHeroStackedLayout] = useState(false)
 
   useEffect(() => {
     setHeroFxReady(true)
+  }, [])
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)")
+    const sync = () => setHeroStackedLayout(mq.matches)
+    sync()
+    mq.addEventListener("change", sync)
+    return () => mq.removeEventListener("change", sync)
   }, [])
 
   const { scrollYProgress: heroProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
   })
-  const heroParallax = useTransform(heroProgress, [0, 1], [0, 120])
-  const heroFade = useTransform(heroProgress, [0, 0.45], [1, 0.15])
+  const heroParallaxLo = useTransform(heroProgress, [0, 1], [0, 52])
+  const heroParallaxHi = useTransform(heroProgress, [0, 1], [0, 120])
+  const heroTextFade = useTransform(heroProgress, [0, 0.42], [1, 0.12])
+  /** No layout empilhado o átomo fica no fim do hero — o fade só entra no fim do scroll da seção. */
+  const heroAtomFadeStacked = useTransform(
+    heroProgress,
+    [0, 0.82, 0.98],
+    [1, 1, 0.12]
+  )
 
   const { scrollYProgress: storyProgress } = useScroll({
     target: storyRef,
@@ -236,17 +306,13 @@ export default function HomePage() {
         >
           {/* Pantone Cloud Dancer (aprox. TCX 11-4201) + véus suaves */}
           <div className="absolute inset-0 z-[2] opacity-[0.045] mix-blend-multiply">
-            <MatrixRain />
+            {heroFxReady ? <MatrixRain /> : null}
           </div>
-          <motion.div
-            className="pointer-events-none absolute -left-32 top-1/4 z-[3] h-[min(70vw,420px)] w-[min(70vw,420px)] rounded-full bg-cyan-400/25 blur-[110px]"
-            animate={{ opacity: [0.25, 0.45, 0.25] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          <div
+            className="pointer-events-none absolute -left-32 top-1/4 z-[3] h-[min(70vw,420px)] w-[min(70vw,420px)] rounded-full bg-cyan-400/25 blur-[110px] animate-[hero-orb-soft_8s_ease-in-out_infinite] motion-reduce:animate-none"
           />
-          <motion.div
-            className="pointer-events-none absolute -right-24 top-16 z-[3] h-[min(90vw,520px)] w-[min(90vw,520px)] rounded-full bg-violet-400/20 blur-[100px]"
-            animate={{ opacity: [0.28, 0.48, 0.28] }}
-            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          <div
+            className="pointer-events-none absolute -right-24 top-16 z-[3] h-[min(90vw,520px)] w-[min(90vw,520px)] rounded-full bg-violet-400/20 blur-[100px] animate-[hero-orb-soft_7s_ease-in-out_infinite] motion-reduce:animate-none"
           />
           <div className="absolute inset-0 z-[3] bg-gradient-to-b from-white/50 via-[#F3EFEA]/92 to-[#ebe6df]" />
           <div className="pointer-events-none absolute inset-0 z-[3] bg-[radial-gradient(ellipse_90%_70%_at_50%_0%,rgba(56,189,248,0.18),transparent_55%)]" />
@@ -255,16 +321,21 @@ export default function HomePage() {
           <div className="pointer-events-none absolute inset-0 z-[3] opacity-[0.35] bg-[linear-gradient(rgba(100,116,139,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(100,116,139,0.1)_1px,transparent_1px)] bg-[size:48px_48px]" />
 
           <motion.div
-            style={{ y: heroParallax, opacity: heroFade }}
+            style={{
+              y: heroStackedLayout ? heroParallaxLo : heroParallaxHi,
+            }}
             className="relative z-10 mx-auto w-full max-w-[96rem] px-6 lg:px-10 py-16 lg:py-24"
           >
             <motion.div
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-              className="grid items-center gap-10 lg:grid-cols-[1fr_minmax(300px,1.05fr)] xl:gap-14"
+              className="grid items-center gap-10 lg:grid-cols-[1fr_minmax(360px,1.22fr)] xl:gap-14 2xl:grid-cols-[1fr_minmax(400px,1.28fr)]"
             >
-              <div className="max-w-3xl">
+              <motion.div
+                className="max-w-3xl"
+                style={{ opacity: heroTextFade }}
+              >
                 <Badge
                   variant="outline"
                   className="mb-6 border-slate-400/70 bg-white/55 px-4 py-2 font-mono text-sm text-slate-800 shadow-sm backdrop-blur-sm md:text-base md:px-5 md:py-2.5"
@@ -284,7 +355,7 @@ export default function HomePage() {
                   </span>
                 </h1>
 
-                <p className="mt-6 max-w-2xl font-sans text-lg leading-relaxed text-slate-700 md:text-xl md:leading-relaxed">
+                <p className="mt-6 max-w-2xl text-pretty font-sans text-base leading-relaxed text-slate-700 sm:text-lg md:text-xl md:leading-relaxed">
                   {EVENT.theme}
                 </p>
 
@@ -323,7 +394,7 @@ export default function HomePage() {
                 <div className="mt-14 grid max-w-xl grid-cols-3 gap-6 border-t border-slate-300/80 pt-10 md:gap-10">
                   <div>
                     <p className="font-mono text-3xl font-bold text-slate-900 md:text-4xl">
-                      20+
+                      5+
                     </p>
                     <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-slate-600 md:text-xs">
                       palestrantes
@@ -346,19 +417,26 @@ export default function HomePage() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="relative flex min-h-[min(85vh,760px)] w-full items-center justify-center lg:min-h-[min(90vh,820px)] lg:justify-self-end">
-                {heroFxReady ? (
-                  <RutherfordAtom embedded className="min-h-[min(85vh,760px)] w-full py-1" />
-                ) : (
-                  <div className="flex min-h-[320px] w-full items-center justify-center">
-                    <span className="font-mono text-sm text-muted-foreground">
-                      …
-                    </span>
-                  </div>
-                )}
-              </div>
+              <motion.div
+                className="relative flex w-full items-center justify-center py-4 sm:py-6 lg:min-h-[min(90vh,820px)] lg:justify-self-end lg:py-0"
+                style={{
+                  opacity: heroStackedLayout ? heroAtomFadeStacked : heroTextFade,
+                }}
+              >
+                <div className="aspect-square w-full max-w-[min(100%,420px)] overflow-hidden rounded-3xl border border-slate-900/20 bg-[#030408] shadow-[0_28px_56px_-24px_rgba(0,0,0,0.45)] sm:max-w-[min(100%,480px)] md:max-w-[min(100%,520px)] lg:max-w-[min(100%,min(92vw,600px))] xl:max-w-[min(100%,min(90vw,680px))] 2xl:max-w-[min(100%,760px)]">
+                  {heroFxReady ? (
+                    <RutherfordAtom embedded className="h-full min-h-0 w-full" />
+                  ) : (
+                    <div className="flex aspect-square w-full items-center justify-center bg-[#030408]">
+                      <span className="font-mono text-sm text-slate-500">
+                        …
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
             </motion.div>
           </motion.div>
         </section>
@@ -368,7 +446,12 @@ export default function HomePage() {
           className="relative z-20 min-h-screen overflow-hidden rounded-t-3xl bg-[#1a2545] pb-0 shadow-[0_28px_90px_rgba(0,0,0,0.5)]"
         >
           <div className="pointer-events-none absolute inset-0 min-h-[520px] opacity-95">
-            {heroFxReady ? <BinaryRain /> : null}
+            <MountWhenInView
+              margin="140px 0px 220px 0px"
+              className="pointer-events-none absolute inset-0 min-h-[520px] w-full"
+            >
+              <BinaryRain />
+            </MountWhenInView>
           </div>
           <div className="relative z-10">
             {/* Bento — visão geral */}
@@ -525,7 +608,7 @@ export default function HomePage() {
         {/* Stats */}
         <Section className="mx-auto grid max-w-[96rem] grid-cols-2 gap-3 px-6 py-6 lg:px-10 md:grid-cols-4 md:gap-4">
           {[
-            { icon: Users, label: "público esperado", value: "500+" },
+            { icon: Users, label: "público esperado", value: "230+" },
             { icon: Mic2, label: "noites de palestras", value: "3" },
             { icon: Coffee, label: "networking", value: "incluso" },
             { icon: CalendarDays, label: "janela diária", value: "3 h" },
@@ -589,7 +672,12 @@ export default function HomePage() {
           className="relative z-30 scroll-mt-[120px] min-h-screen overflow-hidden rounded-t-3xl bg-[#07080f] pt-6 shadow-[0_28px_90px_rgba(0,0,0,0.5)] md:pt-10"
         >
           <div className="pointer-events-none absolute inset-0 min-h-[420px] opacity-40">
-            {heroFxReady ? <RasenganChidori /> : null}
+            <MountWhenInView
+              margin="120px 0px 200px 0px"
+              className="pointer-events-none absolute inset-0 min-h-[420px] w-full"
+            >
+              <RasenganChidori />
+            </MountWhenInView>
           </div>
           <Section className="relative z-10 py-14 md:py-20">
             <div className="mx-auto max-w-[96rem] px-6 lg:px-10">
@@ -667,7 +755,12 @@ export default function HomePage() {
           className="relative z-40 flex min-h-screen flex-col overflow-hidden rounded-t-3xl bg-[#060b18] shadow-[0_28px_90px_rgba(0,0,0,0.5)]"
         >
           <div className="pointer-events-none absolute inset-0 min-h-screen opacity-35">
-            {heroFxReady ? <NeuralNetwork /> : null}
+            <MountWhenInView
+              margin="160px 0px 240px 0px"
+              className="pointer-events-none absolute inset-0 min-h-screen w-full"
+            >
+              <NeuralNetwork />
+            </MountWhenInView>
           </div>
           <Section className="relative z-10 mx-auto flex w-full max-w-[96rem] flex-1 flex-col justify-center px-6 py-14 lg:px-10 md:py-16">
             <div className="mb-2 flex items-center gap-2">
@@ -691,7 +784,12 @@ export default function HomePage() {
           className="relative z-50 flex min-h-screen flex-col overflow-hidden rounded-t-3xl bg-[#070c1a] shadow-[0_28px_90px_rgba(0,0,0,0.5)]"
         >
           <div className="pointer-events-none absolute inset-0 min-h-screen opacity-30">
-            {heroFxReady ? <AuroraBorealis /> : null}
+            <MountWhenInView
+              margin="160px 0px 240px 0px"
+              className="pointer-events-none absolute inset-0 min-h-screen w-full"
+            >
+              <AuroraBorealis />
+            </MountWhenInView>
           </div>
           <Section className="relative z-10 mx-auto flex w-full max-w-[96rem] flex-1 flex-col justify-start px-6 pb-12 pt-14 lg:px-10 md:pb-14 md:pt-16">
             <div className="mb-1 flex items-center gap-2">
@@ -709,68 +807,63 @@ export default function HomePage() {
           </Section>
         </section>
 
-        {/* Localização */}
-        <Section className="relative z-[60] scroll-mt-[120px] rounded-t-3xl border-t border-border/40 bg-[#F3EFEA] py-16 shadow-[0_28px_90px_rgba(0,0,0,0.45)] md:py-20">
-          <div className="mx-auto max-w-[96rem] px-6 lg:px-10">
-            <div className="mb-2 flex items-center gap-2">
-              <Terminal size={16} className="text-emerald-700" />
-              <h2 className="font-mono text-4xl font-bold text-slate-900 md:text-5xl">
-                localização<span className="animate-blink text-emerald-700">_</span>
-              </h2>
+        {/* Localização + CTA — bloco único (fundo #243056) */}
+        <Section className="cta-finale relative z-[60] scroll-mt-[120px] overflow-hidden rounded-t-3xl border-t border-white/10 bg-[#243056] py-16 shadow-[0_28px_100px_rgba(0,0,0,0.45)] md:py-20">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(56,189,248,0.08),transparent_55%)]" />
+          <div className="relative mx-auto max-w-[96rem] px-6 lg:px-10">
+            <div className="mx-auto max-w-3xl text-center">
+              <div className="mb-2 flex items-center justify-center gap-2">
+                <Terminal size={16} className="text-cyan-300" />
+                <h2 className="font-mono text-4xl font-bold text-[#F3EFEA] md:text-5xl">
+                  localização<span className="animate-blink text-cyan-300">_</span>
+                </h2>
+              </div>
+              <p className="mb-6 flex flex-wrap items-center justify-center gap-1.5 font-mono text-sm text-[#F3EFEA]/85">
+                <MapPin size={14} className="shrink-0 text-cyan-300" />
+                {EVENT.location.venue} — {EVENT.location.addressLine},{" "}
+                {EVENT.location.city}
+              </p>
             </div>
-            <p className="mb-6 flex flex-wrap items-center gap-1.5 font-mono text-sm text-slate-700">
-              <MapPin size={14} className="text-emerald-700" />
-              {EVENT.location.venue} — {EVENT.location.addressLine},{" "}
-              {EVENT.location.city}
-            </p>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="h-72 w-full overflow-hidden rounded-xl border border-border md:h-96"
+              className="mt-2 h-72 w-full overflow-hidden rounded-xl border border-white/15 bg-black/20 md:mt-3 md:h-[26rem] lg:h-[28rem]"
             >
-              <iframe
+              <LazyMapEmbed
+                mapQuery={EVENT.location.mapQuery}
                 title={EVENT.location.venue}
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(EVENT.location.mapQuery)}&output=embed`}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
+                className="h-full w-full"
               />
             </motion.div>
-          </div>
-        </Section>
 
-        {/* CTA */}
-        <Section className="cta-finale relative z-[70] scroll-mt-[120px] overflow-hidden rounded-t-3xl bg-[#243056] py-24 text-center shadow-[0_28px_100px_rgba(0,0,0,0.45)]">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(56,189,248,0.08),transparent_55%)]" />
-          <div className="relative mx-auto max-w-[96rem] px-6 lg:px-10">
-          <p className="mb-4 font-mono text-sm text-[#F3EFEA]/85">
-            // pronto para participar?
-          </p>
-          <h2 className="mb-4 font-mono text-4xl font-bold text-[#F3EFEA] md:text-5xl">
-            garanta sua vaga<span className="animate-blink text-[#F3EFEA]">_</span>
-          </h2>
-          <p className="mx-auto mb-10 max-w-lg text-[#F3EFEA]/90">
-            Inscrição gratuita. Prioridade para alunos da UniCesumar Londrina.
-          </p>
-          <motion.div
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 400, damping: 22 }}
-          >
-            <Button
-              asChild
-              size="lg"
-              className="h-auto border-0 bg-black px-12 py-7 font-mono text-lg font-bold text-[#F3EFEA] shadow-xl hover:bg-neutral-950 md:px-16 md:py-9 md:text-xl"
-            >
-              <Link href="/inscricao">
-                inscrever-se agora <ChevronRight className="size-5 md:size-6" />
-              </Link>
-            </Button>
-          </motion.div>
+            <div className="mx-auto mt-14 max-w-3xl border-t border-white/10 pt-14 text-center md:mt-16 md:pt-16">
+              <p className="mb-4 font-mono text-sm text-[#F3EFEA]/85">
+                // pronto para participar?
+              </p>
+              <h2 className="mb-4 font-mono text-4xl font-bold text-[#F3EFEA] md:text-5xl">
+                garanta sua vaga<span className="animate-blink text-[#F3EFEA]">_</span>
+              </h2>
+              <p className="mx-auto mb-10 max-w-lg text-[#F3EFEA]/90">
+                Inscrição gratuita. Prioridade para alunos da UniCesumar Londrina.
+              </p>
+              <motion.div
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 400, damping: 22 }}
+              >
+                <Button
+                  asChild
+                  size="lg"
+                  className="h-auto border-0 bg-black px-12 py-7 font-mono text-lg font-bold text-[#F3EFEA] shadow-xl hover:bg-neutral-950 md:px-16 md:py-9 md:text-xl"
+                >
+                  <Link href="/inscricao">
+                    inscrever-se agora <ChevronRight className="size-5 md:size-6" />
+                  </Link>
+                </Button>
+              </motion.div>
+            </div>
           </div>
         </Section>
       </main>

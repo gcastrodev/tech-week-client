@@ -40,12 +40,12 @@ export default function InscricaoPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    const ra = Number(form.student_registration)
-    if (!form.name || !form.student_registration || !form.course_name || !form.course_period) {
+    const ra = form.student_registration.trim()
+    if (!form.name || !ra || !form.course_name || !form.course_period) {
       toast.error("Preencha todos os campos obrigatórios.")
       return
     }
-    if (isNaN(ra) || ra < 100000000 || ra > 999999999) {
+    if (!/^\d{9}$/.test(ra)) {
       toast.error("RA deve ter exatamente 9 dígitos.")
       return
     }
@@ -72,8 +72,14 @@ export default function InscricaoPage() {
       const msg = err instanceof Error ? err.message : ""
       if (msg === "ra_already_registered") {
         toast.error("Este RA já está inscrito.")
-      } else if (msg === "invalid_ra") {
+      } else if (msg === "invalid_student_registration") {
         toast.error("RA inválido.")
+      } else if (msg === "invalid_name") {
+        toast.error("Nome inválido.")
+      } else if (msg === "invalid_course_name") {
+        toast.error("Nome do curso inválido.")
+      } else if (msg === "invalid_course_period") {
+        toast.error("Período inválido.")
       } else {
         toast.error("Erro ao realizar inscrição. Tente novamente.")
       }

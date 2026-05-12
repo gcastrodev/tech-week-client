@@ -5,18 +5,19 @@
 ```json
 {
   "name": "string", // 255 characters max
-  "student_registration": 253579732, // 9 chars max
+  "student_registration": "253579732", // string, exactly 9 digits
   "course_name": "string", // 255 characters max
   "course_period": 1, // min 1, max 12
-  "coffee_break": false/true
+  "coffee_break": false
 }
 ```
 
-- `200`
-- `400` `{ "error": "missing_fields" }`
-- `400` `{ "error": "invalid_ra" }`
+- `201`
+- `400` `{ "error": "invalid_name" }`
+- `400` `{ "error": "invalid_student_registration" }`
+- `400` `{ "error": "invalid_course_name" }`
+- `400` `{ "error": "invalid_course_period" }`
 - `400` `{ "error": "ra_already_registered" }`
-- `422` `{ "error": "student_registration: expected number" }`
 
 ---
 
@@ -25,15 +26,18 @@
 ```json
 {
   "submitter_name": "string", // 255 characters max
-  "submitter_registration": 253579732, // 9 chars max
+  "submitter_registration": "253579732", // string, exactly 9 digits
   "project_name": "string", // 255 characters max
   "description": "string" // 500 characters max
 }
 ```
 
 - `200`
-- `400` `{ "error": "missing_fields" }`
+- `400` `{ "error": "invalid_submitter_name" }`
 - `400` `{ "error": "invalid_ra" }`
+- `400` `{ "error": "invalid_project_name" }`
+- `400` `{ "error": "invalid_description" }`
+- `400` `{ "error": "ra_not_found" }`
 
 ---
 
@@ -41,12 +45,12 @@
 
 ```json
 {
-  "student_registration": 253579732 // - 9 chars max
+  "student_registration": "253579732" // string, exactly 9 digits
 }
 ```
 
 - `200`
-- `400` `{ "error": "invalid_ra" }`
+- `400` `{ "error": "invalid_student_registration" }`
 - `404` `{ "error": "ra_not_found" }`
 
 ---
@@ -60,8 +64,7 @@
 }
 ```
 
-- `200`
-- `400` `{ "error": "missing_fields" }`
+- `200` `{ "token": "..." }`
 - `401` `{ "error": "invalid_credentials" }`
 
 ---
@@ -72,7 +75,7 @@
 [
   {
     "name": "string", // 255 characters max
-    "student_registration": 253579732, // 9 chars max
+    "student_registration": "253579732", // string, exactly 9 digits
     "course_name": "string", // 255 characters max
     "course_period": 1, // min 1, max 12
     "coffee_break": false,
@@ -80,6 +83,10 @@
   }
 ]
 ```
+
+- `200`
+- `401` `{ "error": "missing_token" }`
+- `401` `{ "error": "invalid_token" }`
 
 ---
 
@@ -90,9 +97,26 @@
   {
     "id": 1,
     "submitter_name": "string", // 255 characters max
-    "submitter_registration": 253579732, // 9 chars max
+    "submitter_registration": "253579732", // string, exactly 9 digits
     "project_name": "string", // 255 characters max
     "description": "string" // 500 characters max
   }
 ]
 ```
+
+- `200`
+- `401` `{ "error": "missing_token" }`
+- `401` `{ "error": "invalid_token" }`
+
+---
+
+## Notas — diferenças em relação ao `CONTRACT.md` anterior deste repositório
+
+| Área | Antes (repo) | Agora (este documento) |
+|------|----------------|-------------------------|
+| `student_registration` / `submitter_registration` | JSON numérico e comentário “9 chars max” | **String** com **exatamente 9 dígitos** |
+| POST `/registrations` | `200`, erros genéricos (`missing_fields`, `invalid_ra`), `422` tipo número | **`201`**, erros específicos por campo |
+| POST `/projects` | Poucos códigos de erro listados | Lista completa de `400` por campo + `ra_not_found` |
+| POST `/checkin` | `invalid_ra` para RA inválido | **`invalid_student_registration`** |
+| POST `/admin/login` | Incluía `400` `missing_fields` | Apenas **`401`** `invalid_credentials` e **`200`** com `token` |
+| GET protegidos | Sem códigos de erro no contrato | **`401`** `missing_token` e `invalid_token` |

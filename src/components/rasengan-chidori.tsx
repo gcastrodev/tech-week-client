@@ -2,6 +2,11 @@
 
 import { useRef, useEffect } from "react"
 import { motion } from "motion/react"
+import {
+  usePageVisibility,
+  usePageVisibilityRef,
+} from "@/hooks/use-page-visibility"
+import { observeViewport } from "@/lib/observe-viewport"
 
 function hash01(n: number) {
   const x = Math.sin(n * 127.1) * 43758.5453
@@ -9,10 +14,16 @@ function hash01(n: number) {
 }
 
 export function RasenganChidori() {
+  const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const pageVisible = usePageVisibility()
+  const pageVisibleRef = usePageVisibilityRef(pageVisible)
+  const viewportOkRef = useRef(false)
 
   useEffect(() => {
-    if (!canvasRef.current?.getContext("2d")) return
+    const wrap = wrapRef.current
+    const c = canvasRef.current
+    if (!wrap || !c?.getContext("2d")) return
 
     let raf = 0
     let t = 0
@@ -29,6 +40,34 @@ export function RasenganChidori() {
 
     resize()
     window.addEventListener("resize", resize)
+
+    const stop = () => {
+      if (raf) cancelAnimationFrame(raf)
+      raf = 0
+    }
+
+    const start = () => {
+      if (raf) return
+      if (!pageVisibleRef.current || !viewportOkRef.current) return
+      raf = requestAnimationFrame(draw)
+    }
+
+    const unobViewport = observeViewport(
+      wrap,
+      (v) => {
+        viewportOkRef.current = v
+        if (v) start()
+        else stop()
+      },
+      "140px 0px 240px 0px"
+    )
+
+    const onVis = () => {
+      pageVisibleRef.current = document.visibilityState === "visible"
+      if (pageVisibleRef.current && viewportOkRef.current) start()
+      else stop()
+    }
+    document.addEventListener("visibilitychange", onVis)
 
     function drawRasengan(g: CanvasRenderingContext2D, x: number, yPos: number, r: number, time: number) {
       // Glow externo grande
@@ -116,6 +155,8 @@ export function RasenganChidori() {
     }
 
     function draw() {
+      raf = 0
+      if (!pageVisibleRef.current || !viewportOkRef.current) return
       const c = canvasRef.current
       const g = c?.getContext("2d")
       if (!c || !g) return
@@ -193,17 +234,21 @@ export function RasenganChidori() {
       raf = requestAnimationFrame(draw)
     }
 
-    draw()
+    start()
 
     return () => {
-      cancelAnimationFrame(raf)
+      stop()
+      unobViewport()
+      document.removeEventListener("visibilitychange", onVis)
       window.removeEventListener("resize", resize)
     }
   }, [])
 
   return (
     <motion.div className="pointer-events-none absolute inset-0 z-0">
-      <canvas ref={canvasRef} className="absolute inset-0 h-full w-full opacity-90" />
+      <div ref={wrapRef} className="absolute inset-0">
+        <canvas ref={canvasRef} className="absolute inset-0 h-full w-full opacity-90" />
+      </div>
     </motion.div>
   )
 }

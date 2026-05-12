@@ -3,6 +3,11 @@
 import type { PointerEvent } from "react"
 import { useRef, useEffect, useMemo, useCallback } from "react"
 import { motion } from "motion/react"
+import {
+  usePageVisibility,
+  usePageVisibilityRef,
+} from "@/hooks/use-page-visibility"
+import { observeViewport } from "@/lib/observe-viewport"
 
 const PROTONS = 6
 const NEUTRONS = 6
@@ -89,6 +94,10 @@ export function RutherfordAtom({
   className?: string
   embedded?: boolean
 }) {
+  const pageVisible = usePageVisibility()
+  const pageVisibleRef = usePageVisibilityRef(pageVisible)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const viewportOkRef = useRef(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const trailsRef = useRef<TrailPt[][]>(Array.from({ length: ELECTRONS }, () => []))
   const camRef = useRef(0)
@@ -210,11 +219,40 @@ export function RutherfordAtom({
   )
 
   useEffect(() => {
-    if (!canvasRef.current?.getContext("2d")) return
+    const wrap = wrapRef.current
+    if (!canvasRef.current?.getContext("2d") || !wrap) return
 
     let raf = 0
     let t = 0
     const maxTrail = 64
+
+    const stop = () => {
+      if (raf) cancelAnimationFrame(raf)
+      raf = 0
+    }
+
+    const start = () => {
+      if (raf) return
+      if (!pageVisibleRef.current || !viewportOkRef.current) return
+      raf = requestAnimationFrame(draw)
+    }
+
+    const unobViewport = observeViewport(
+      wrap,
+      (v) => {
+        viewportOkRef.current = v
+        if (v) start()
+        else stop()
+      },
+      embedded ? "60px 0px 100px 0px" : "140px 0px 240px 0px"
+    )
+
+    const onVis = () => {
+      pageVisibleRef.current = document.visibilityState === "visible"
+      if (pageVisibleRef.current && viewportOkRef.current) start()
+      else stop()
+    }
+    document.addEventListener("visibilitychange", onVis)
 
     function resize() {
       const c = canvasRef.current
@@ -230,33 +268,41 @@ export function RutherfordAtom({
     window.addEventListener("resize", resize)
 
     function draw() {
+      raf = 0
+      if (!pageVisibleRef.current || !viewportOkRef.current) return
       const c = canvasRef.current
       const g = c?.getContext("2d")
       if (!c || !g) return
       const W = c.offsetWidth
       const H = c.offsetHeight
+      const dpr = Math.max(1, c.width / Math.max(1, W))
 
-      camRef.current += 0.0082
-      const cam = camRef.current
-      const mx =
-        W / 2 +
-        Math.cos(cam * 0.41) * 42 +
-        Math.sin(cam * 0.27) * 18
-      const my =
-        H / 2 +
-        Math.sin(cam * 0.35) * 36 +
-        Math.cos(cam * 0.19) * 22
-
-      g.save()
-      g.translate(mx, my)
-      g.rotate(Math.sin(cam * 0.26) * 0.11 + Math.cos(cam * 0.19) * 0.07)
-      g.translate(-mx, -my)
-
+      /* Clear + base fill in identity space so a tilted clearRect never leaves
+         unpainted corners (gray page background bleeding through). */
+      g.setTransform(dpr, 0, 0, dpr, 0, 0)
       g.clearRect(0, 0, W, H)
       if (embedded) {
         g.fillStyle = "#030408"
         g.fillRect(0, 0, W, H)
       }
+
+      camRef.current += 0.0082
+      const cam = camRef.current
+      /* Hero (embedded): centro fixo no quadrado preto — sem deriva orbital nem rotação global da cena. */
+      const mx = embedded
+        ? W / 2
+        : W / 2 + Math.cos(cam * 0.41) * 42 + Math.sin(cam * 0.27) * 18
+      const my = embedded
+        ? H / 2
+        : H / 2 + Math.sin(cam * 0.35) * 36 + Math.cos(cam * 0.19) * 22
+      const sceneRot = embedded
+        ? 0
+        : Math.sin(cam * 0.26) * 0.11 + Math.cos(cam * 0.19) * 0.07
+
+      g.save()
+      g.translate(mx, my)
+      g.rotate(sceneRot)
+      g.translate(-mx, -my)
 
       const rotOpts = {
         embedded,
@@ -520,49 +566,58 @@ export function RutherfordAtom({
       raf = requestAnimationFrame(draw)
     }
 
-    draw()
+    start()
 
     return () => {
-      cancelAnimationFrame(raf)
+      stop()
+      unobViewport()
+      document.removeEventListener("visibilitychange", onVis)
       window.removeEventListener("resize", resize)
     }
   }, [embedded, shells, decorRings])
 
-  const size = embedded
-    ? "min(800px, min(98vw, 92vh))"
-    : "min(820px, 95vmin)"
+  const size = embedded ? "100%" : "min(820px, 95vmin)"
 
-  const innerMotion = (
+  const innerMotion = embedded ? (
+    <div className="relative flex size-full min-h-0 min-w-0 items-center justify-center overflow-hidden will-change-transform [transform:translateZ(0)] motion-reduce:animate-none animate-[atom-hero-breathe_5.8s_ease-in-out_infinite]">
+      <div
+        className="pointer-events-none absolute -inset-[12%] rounded-full opacity-[0.35] blur-[100px]"
+        style={{
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(56,189,248,0.18) 0%, transparent 65%)",
+        }}
+      />
+      <canvas
+        ref={canvasRef}
+        className="relative z-[1]"
+        style={{
+          width: size,
+          height: size,
+        }}
+        aria-hidden
+      />
+    </div>
+  ) : (
     <motion.div
-      className="relative flex items-center justify-center will-change-transform"
+      className="relative flex size-full min-h-0 min-w-0 items-center justify-center overflow-hidden will-change-transform"
       animate={{
-        scale: embedded ? [1, 1.08, 0.96, 1.06, 1] : [1, 1.06, 0.98, 1.03, 1],
+        scale: [1, 1.06, 0.98, 1.03, 1],
       }}
       transition={{
-        duration: embedded ? 5.8 : 4,
+        duration: 4,
         repeat: Infinity,
         ease: "easeInOut",
       }}
       style={{ transform: "translateZ(36px)" }}
     >
-      {!embedded ? (
-        <div
-          className="pointer-events-none absolute -inset-[20%] rounded-full opacity-90 blur-3xl"
-          style={{
-            background:
-              "radial-gradient(circle at 38% 42%, rgba(56,189,248,0.22) 0%, rgba(217,70,239,0.16) 38%, rgba(250,204,21,0.1) 62%, transparent 78%)",
-            animation: "radio-nucleus-pulse 2.5s ease-in-out infinite",
-          }}
-        />
-      ) : (
-        <div
-          className="pointer-events-none absolute -inset-[12%] rounded-full opacity-[0.35] blur-[100px]"
-          style={{
-            background:
-              "radial-gradient(circle at 42% 45%, rgba(56,189,248,0.18) 0%, transparent 65%)",
-          }}
-        />
-      )}
+      <div
+        className="pointer-events-none absolute -inset-[20%] rounded-full opacity-90 blur-3xl"
+        style={{
+          background:
+            "radial-gradient(circle at 38% 42%, rgba(56,189,248,0.22) 0%, rgba(217,70,239,0.16) 38%, rgba(250,204,21,0.1) 62%, transparent 78%)",
+          animation: "radio-nucleus-pulse 2.5s ease-in-out infinite",
+        }}
+      />
       <canvas
         ref={canvasRef}
         className="relative z-[1]"
@@ -578,13 +633,14 @@ export function RutherfordAtom({
   if (embedded) {
     return (
       <div
-        className={`relative flex w-full cursor-grab touch-none items-center justify-center active:cursor-grabbing ${className}`}
+        ref={wrapRef}
+        className={`relative flex h-full min-h-0 w-full cursor-grab touch-none items-center justify-center active:cursor-grabbing ${className}`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
       >
-        <div className="relative [perspective:1400px] [transform-style:preserve-3d]">
+        <div className="relative isolate size-full min-h-0 min-w-0 overflow-hidden [perspective:1400px] [transform-style:preserve-3d]">
           {innerMotion}
         </div>
       </div>
@@ -593,6 +649,7 @@ export function RutherfordAtom({
 
   return (
     <div
+      ref={wrapRef}
       className={`pointer-events-none absolute inset-0 z-0 flex items-center justify-center ${className}`}
     >
       <motion.div

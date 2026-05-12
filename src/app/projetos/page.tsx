@@ -30,17 +30,17 @@ export default function ProjetosPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    const ra = Number(form.submitter_registration)
+    const ra = form.submitter_registration.trim()
     if (
       !form.submitter_name ||
-      !form.submitter_registration ||
+      !ra ||
       !form.project_name ||
       !form.description
     ) {
       toast.error("Preencha todos os campos.")
       return
     }
-    if (isNaN(ra) || ra < 100000000 || ra > 999999999) {
+    if (!/^\d{9}$/.test(ra)) {
       toast.error("RA deve ter exatamente 9 dígitos.")
       return
     }
@@ -65,6 +65,14 @@ export default function ProjetosPage() {
       const msg = err instanceof Error ? err.message : ""
       if (msg === "invalid_ra") {
         toast.error("RA inválido.")
+      } else if (msg === "invalid_submitter_name") {
+        toast.error("Nome do responsável inválido.")
+      } else if (msg === "invalid_project_name") {
+        toast.error("Nome do projeto inválido.")
+      } else if (msg === "invalid_description") {
+        toast.error("Descrição inválida.")
+      } else if (msg === "ra_not_found") {
+        toast.error("RA não encontrado na base acadêmica.")
       } else {
         toast.error("Erro ao submeter projeto. Tente novamente.")
       }

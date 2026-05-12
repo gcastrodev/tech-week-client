@@ -1,6 +1,11 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+import {
+  usePageVisibility,
+  usePageVisibilityRef,
+} from "@/hooks/use-page-visibility"
+import { observeViewport } from "@/lib/observe-viewport"
 
 type Drop = {
   x: number
@@ -21,11 +26,16 @@ type Layer = {
 }
 
 export function BinaryRain() {
+  const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const pageVisible = usePageVisibility()
+  const pageVisibleRef = usePageVisibilityRef(pageVisible)
+  const viewportOkRef = useRef(false)
 
   useEffect(() => {
+    const wrap = wrapRef.current
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas || !wrap) return
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
@@ -90,15 +100,41 @@ export function BinaryRain() {
     }
     window.addEventListener("resize", onResize)
 
+    const stop = () => {
+      if (raf) cancelAnimationFrame(raf)
+      raf = 0
+    }
+
+    const start = () => {
+      if (raf) return
+      if (!pageVisibleRef.current || !viewportOkRef.current) return
+      raf = requestAnimationFrame(draw)
+    }
+
+    const unobViewport = observeViewport(
+      wrap,
+      (v) => {
+        viewportOkRef.current = v
+        if (v) start()
+        else stop()
+      },
+      "120px 0px 220px 0px"
+    )
+
+    const onVis = () => {
+      pageVisibleRef.current = document.visibilityState === "visible"
+      if (pageVisibleRef.current && viewportOkRef.current) start()
+      else stop()
+    }
+    document.addEventListener("visibilitychange", onVis)
+
     function draw() {
-      if (!canvas || !ctx) {
-        raf = requestAnimationFrame(draw)
-        return
-      }
+      raf = 0
+      if (!pageVisibleRef.current || !viewportOkRef.current) return
+      if (!canvas || !ctx) return
       const w = canvas.offsetWidth
       const h = canvas.offsetHeight
 
-      // Fade overlay produces motion trails
       ctx.fillStyle = "rgba(20, 32, 60, 0.16)"
       ctx.fillRect(0, 0, w, h)
 
@@ -120,11 +156,9 @@ export function BinaryRain() {
           const flick = 0.8 + Math.sin(d.flicker) * 0.2
           const a = d.alpha * flick
 
-          // Bright leading character
           ctx.fillStyle = `hsla(${layer.hue}, 100%, 88%, ${Math.min(1, a + 0.25)})`
           ctx.fillText(d.bit, d.x, d.y)
 
-          // Glow tint underneath
           ctx.fillStyle = `hsla(${layer.hue}, 95%, 62%, ${a * 0.65})`
           ctx.fillText(d.bit, d.x, d.y)
         }
@@ -134,19 +168,27 @@ export function BinaryRain() {
 
       raf = requestAnimationFrame(draw)
     }
-    draw()
+
+    start()
 
     return () => {
-      cancelAnimationFrame(raf)
+      stop()
+      unobViewport()
+      document.removeEventListener("visibilitychange", onVis)
       window.removeEventListener("resize", onResize)
     }
   }, [])
 
   return (
-    <canvas
-      ref={canvasRef}
+    <div
+      ref={wrapRef}
       className="pointer-events-none absolute inset-0 h-full w-full"
-      aria-hidden
-    />
+    >
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 h-full w-full"
+        aria-hidden
+      />
+    </div>
   )
 }

@@ -317,6 +317,28 @@ html {
   }
 }
 
+/** Hero átomo embutido — só GPU (scale), sem Motion no JS */
+@keyframes atom-hero-breathe {
+  0%,
+  100% {
+    transform: scale(1) translateZ(0);
+  }
+  50% {
+    transform: scale(1.022) translateZ(0);
+  }
+}
+
+/** Orbs do hero — opacidade só */
+@keyframes hero-orb-soft {
+  0%,
+  100% {
+    opacity: 0.28;
+  }
+  50% {
+    opacity: 0.46;
+  }
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }

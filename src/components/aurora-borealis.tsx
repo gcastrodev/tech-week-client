@@ -1,15 +1,27 @@
 "use client"
 
 import { useRef, useEffect } from "react"
+import {
+  usePageVisibility,
+  usePageVisibilityRef,
+} from "@/hooks/use-page-visibility"
+import { observeViewport } from "@/lib/observe-viewport"
 
 export function AuroraBorealis() {
+  const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const pageVisible = usePageVisibility()
+  const pageVisibleRef = usePageVisibilityRef(pageVisible)
+  const viewportOkRef = useRef(false)
 
   useEffect(() => {
-    if (!canvasRef.current?.getContext("2d")) return
+    const wrap = wrapRef.current
+    const c = canvasRef.current
+    if (!wrap || !c?.getContext("2d")) return
 
     let raf = 0
     let t = 0
+    let frameSkip = 0
 
     const waves = [
       { color: ["#00f5d4", "#00b4ff"], speed: 0.52, amp: 130, yBase: 0.28, thick: 190 },
@@ -19,32 +31,68 @@ export function AuroraBorealis() {
     ]
 
     function resize() {
-      const c = canvasRef.current
-      const g = c?.getContext("2d")
-      if (!c || !g) return
+      const canvas = canvasRef.current
+      const g = canvas?.getContext("2d")
+      if (!canvas || !g) return
       const dpr = window.devicePixelRatio || 1
-      const w = c.offsetWidth
-      const h = c.offsetHeight
-      c.width = Math.max(1, Math.floor(w * dpr))
-      c.height = Math.max(1, Math.floor(h * dpr))
+      const w = canvas.offsetWidth
+      const h = canvas.offsetHeight
+      canvas.width = Math.max(1, Math.floor(w * dpr))
+      canvas.height = Math.max(1, Math.floor(h * dpr))
       g.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
 
     resize()
     window.addEventListener("resize", resize)
 
+    const stop = () => {
+      if (raf) cancelAnimationFrame(raf)
+      raf = 0
+    }
+
+    const start = () => {
+      if (raf) return
+      if (!pageVisibleRef.current || !viewportOkRef.current) return
+      raf = requestAnimationFrame(draw)
+    }
+
+    const unobViewport = observeViewport(
+      wrap,
+      (v) => {
+        viewportOkRef.current = v
+        if (v) start()
+        else stop()
+      },
+      "140px 0px 240px 0px"
+    )
+
+    const onVis = () => {
+      pageVisibleRef.current = document.visibilityState === "visible"
+      if (pageVisibleRef.current && viewportOkRef.current) start()
+      else stop()
+    }
+    document.addEventListener("visibilitychange", onVis)
+
     function draw() {
-      const c = canvasRef.current
-      const g = c?.getContext("2d")
-      if (!c || !g) return
-      const W = c.offsetWidth
-      const H = c.offsetHeight
+      raf = 0
+      if (!pageVisibleRef.current || !viewportOkRef.current) return
+      const canvas = canvasRef.current
+      const g = canvas?.getContext("2d")
+      if (!canvas || !g) return
+
+      frameSkip++
+      if (frameSkip % 3 === 0) {
+        raf = requestAnimationFrame(draw)
+        return
+      }
+      const W = canvas.offsetWidth
+      const H = canvas.offsetHeight
       g.clearRect(0, 0, W, H)
 
       waves.forEach((wave) => {
         const yBase = H * wave.yBase
         g.beginPath()
-        for (let x = 0; x <= W; x += 4) {
+        for (let x = 0; x <= W; x += 8) {
           const y =
             yBase +
             Math.sin(x * 0.008 + t * wave.speed) * wave.amp +
@@ -66,22 +114,29 @@ export function AuroraBorealis() {
         g.fill()
       })
 
-      t += 0.016
+      t += 0.032
       raf = requestAnimationFrame(draw)
     }
 
-    draw()
+    start()
 
     return () => {
-      cancelAnimationFrame(raf)
+      stop()
+      unobViewport()
+      document.removeEventListener("visibilitychange", onVis)
       window.removeEventListener("resize", resize)
     }
   }, [])
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none absolute inset-0 z-0 h-full w-full opacity-[0.92]"
-    />
+    <div
+      ref={wrapRef}
+      className="pointer-events-none absolute inset-0 z-0 h-full w-full"
+    >
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 h-full w-full opacity-[0.92]"
+      />
+    </div>
   )
 }
