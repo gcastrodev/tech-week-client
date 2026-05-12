@@ -57,15 +57,15 @@ function SpeakerSlideCard({
 }) {
   return (
     <Card className="flex h-full min-w-0 flex-col overflow-hidden border-neon/25 bg-card/70 shadow-[0_0_40px_-16px_rgba(0,255,136,0.22)] backdrop-blur-md">
-      <div className="relative min-h-[220px] bg-gradient-to-br from-cyan-500/25 via-[#0d1f3c] to-neon-muted/25 md:min-h-[260px]">
+      <div className="relative min-h-[300px] bg-gradient-to-br from-cyan-500/25 via-[#0d1f3c] to-neon-muted/25 md:min-h-[380px]">
         <div className="absolute inset-0 flex items-center justify-center opacity-40">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
-            className="h-32 w-32 rounded-full border-2 border-neon/25 border-dashed md:h-40 md:w-40"
+            className="h-64 w-64 rounded-full border-2 border-neon/25 border-dashed md:h-80 md:w-80"
           />
         </div>
-        <div className="absolute bottom-0 left-6 translate-y-1/2 md:left-8">
+        <div className="absolute bottom-0 left-5 translate-y-1/2 sm:left-6 md:left-8">
           <motion.div
             animate={{ scale: [1, 1.06, 1] }}
             transition={{
@@ -74,18 +74,18 @@ function SpeakerSlideCard({
               ease: "easeInOut",
               delay: pulseDelay,
             }}
-            className="relative flex h-[7.25rem] w-[7.25rem] items-center justify-center overflow-hidden rounded-3xl border-2 border-neon/45 bg-gradient-to-br from-cyan-900 to-[#0c1426] shadow-[0_0_28px_rgba(0,255,136,0.22)] md:h-[8.5rem] md:w-[8.5rem]"
+            className="relative flex h-[14.5rem] w-[14.5rem] items-center justify-center overflow-hidden rounded-3xl border-2 border-neon/45 bg-gradient-to-br from-cyan-900 to-[#0c1426] shadow-[0_0_36px_rgba(0,255,136,0.28)] md:h-[17rem] md:w-[17rem] md:rounded-[1.75rem] md:shadow-[0_0_44px_rgba(0,255,136,0.3)]"
           >
             {speaker.photoSrc ? (
               <Image
                 src={speaker.photoSrc}
                 alt={speaker.photoAlt ?? speaker.name}
                 fill
-                sizes="(min-width: 768px) 140px, 120px"
+                sizes="(min-width: 768px) 280px, 240px"
                 className="object-cover"
               />
             ) : (
-              <User className="text-neon" size={52} aria-hidden />
+              <User className="text-neon" size={104} aria-hidden />
             )}
           </motion.div>
         </div>
@@ -95,7 +95,7 @@ function SpeakerSlideCard({
           </Badge>
         </div>
       </div>
-      <CardHeader className="min-w-0 space-y-2 pt-[3.25rem] md:pt-[3.75rem]">
+      <CardHeader className="min-w-0 space-y-2 pt-[7.75rem] md:pt-[9.25rem]">
         <CardTitle className="break-words font-mono text-xl leading-tight md:text-2xl">
           {speaker.name}
         </CardTitle>
@@ -248,7 +248,9 @@ export function SpeakerCarousel({
             ) : (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
                 <SpeakerSlideCard speaker={speakerA} pulseDelay={0} />
-                <SpeakerSlideCard speaker={speakerB!} pulseDelay={0.15} />
+                <div className="hidden min-w-0 md:block">
+                  <SpeakerSlideCard speaker={speakerB!} pulseDelay={0.15} />
+                </div>
               </div>
             )}
           </motion.div>
