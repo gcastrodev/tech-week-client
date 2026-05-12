@@ -14,6 +14,24 @@ import type {
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"
 
+/** Thrown on non-OK responses; `message` matches API `error` when present (backward compatible). */
+export class ApiError extends Error {
+  readonly status: number
+  readonly code?: string
+
+  constructor(status: number, code?: string) {
+    super(code ?? `HTTP_${status}`)
+    this.name = "ApiError"
+    this.status = status
+    this.code = code
+  }
+}
+
+export function isAdminSessionAuthError(err: unknown): boolean {
+  if (!(err instanceof ApiError) || err.status !== 401) return false
+  return err.code === "invalid_token" || err.code === "missing_token"
+}
+
 function getToken() {
   if (typeof window === "undefined") return null
   return localStorage.getItem("admin_token")
@@ -29,8 +47,14 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   })
 
   if (!res.ok) {
-    const err = await res.json()
-    throw new Error(err.error)
+    let code: string | undefined
+    try {
+      const body = (await res.json()) as { error?: string }
+      if (typeof body?.error === "string") code = body.error
+    } catch {
+      /* non-JSON body */
+    }
+    throw new ApiError(res.status, code)
   }
 
   const text = await res.text()

@@ -77,7 +77,7 @@ Detalhe completo em **`CONTRACT.md`**. Resumo:
 
 ## Equipa / deploy
 
-- Backend: repositório separado (ex.: equipa do Guilherme).
+- Backend: repositório separado (https://github.com/guilhermegouve4/tech-week-api).
 - **Vercel (ou similar):** definir `NEXT_PUBLIC_API_URL` nas variáveis de ambiente; build `npm run build`, start `npm run start`.
 
 ## Observações para contribuintes

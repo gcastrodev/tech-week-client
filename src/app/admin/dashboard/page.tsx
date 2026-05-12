@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
-import { getRegistrations, getProjects } from "@/lib/api"
+import { getRegistrations, getProjects, isAdminSessionAuthError } from "@/lib/api"
 import type { Registration, Project } from "@/lib/types"
 import { Loader2, LogOut, Users, Cpu, Coffee, CheckCircle } from "lucide-react"
 
@@ -32,9 +32,14 @@ export default function AdminDashboardPage() {
       const [regs, projs] = await Promise.all([getRegistrations(), getProjects()])
       setRegistrations(regs)
       setProjects(projs)
-    } catch {
-      toast.error("Erro ao carregar dados. Faça login novamente.")
-      router.replace("/admin/login")
+    } catch (err: unknown) {
+      if (isAdminSessionAuthError(err)) {
+        localStorage.removeItem("admin_token")
+        toast.error("Sessão expirada ou inválida. Faça login novamente.")
+        router.replace("/admin/login")
+        return
+      }
+      toast.error("Erro ao carregar dados. Tente novamente.")
     } finally {
       setLoading(false)
     }

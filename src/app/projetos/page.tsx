@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { toast } from "sonner"
 import { postProject } from "@/lib/api"
 import type { ProjectPayload } from "@/lib/types"
+import Link from "next/link"
 import { Loader2, CheckCircle } from "lucide-react"
 
 export default function ProjetosPage() {
@@ -72,7 +73,10 @@ export default function ProjetosPage() {
       } else if (msg === "invalid_description") {
         toast.error("Descrição inválida.")
       } else if (msg === "ra_not_found") {
-        toast.error("RA não encontrado na base acadêmica.")
+        toast.error(
+          "Este RA não está inscrito na Tech Week. Faça sua inscrição antes de submeter o projeto.",
+          { duration: 6000 },
+        )
       } else {
         toast.error("Erro ao submeter projeto. Tente novamente.")
       }
@@ -108,7 +112,12 @@ export default function ProjetosPage() {
               Week.
             </p>
             <p className="rounded-xl border border-border/80 bg-muted/40 px-4 py-3 text-sm md:text-base">
-              Os projetos passam por aprovação da coordenação antes de serem confirmados no evento.
+              <strong className="font-semibold text-foreground">Inscrição obrigatória:</strong> só é
+              possível submeter projeto com um RA já{" "}
+              <Link href="/inscricao" className="text-neon underline underline-offset-2 hover:opacity-90">
+                inscrito no evento
+              </Link>
+              . Os projetos passam por aprovação da coordenação antes de serem confirmados.
             </p>
           </>
         }
