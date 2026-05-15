@@ -183,8 +183,8 @@ export default function AdminDashboardPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border">
-                        {registrations.map((r, i) => (
-                          <tr key={i} className="hover:bg-muted/30 transition-colors">
+                        {registrations.map((r) => (
+                          <tr key={r.student_registration} className="hover:bg-muted/30 transition-colors">
                             <td className="px-4 py-3 font-medium">{r.name}</td>
                             <td className="px-4 py-3 text-muted-foreground font-mono">{r.student_registration}</td>
                             <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{r.course_name}</td>
