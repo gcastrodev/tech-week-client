@@ -11,6 +11,7 @@ import { toast } from "sonner"
 import { getRegistrations, getProjects, isAdminSessionAuthError } from "@/lib/api"
 import type { Registration, Project } from "@/lib/types"
 import { LogOut, Users, Cpu, Coffee, CheckCircle } from "lucide-react"
+import { SiteHeader } from "@/components/site-header"
 
 function DashboardSkeleton() {
   return (
@@ -125,17 +126,18 @@ export default function AdminDashboardPage() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-[min(96rem,calc(100vw-2.5rem))] items-center justify-between px-5 md:px-10 lg:px-14">
-          <div className="flex items-center gap-2 font-semibold">
-            <span className="bg-brand text-white text-xs font-bold px-2 py-1 rounded">UniCesumar</span>
-            <span>Admin — Tech Week</span>
-          </div>
-          <Button variant="ghost" size="sm" onClick={logout} className="gap-1.5 text-muted-foreground">
-            <LogOut size={14} /> Sair
+      <SiteHeader
+        trailing={
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={logout}
+            className="gap-1.5 font-mono text-base text-zinc-300 hover:bg-white/10 hover:text-white lg:text-lg"
+          >
+            <LogOut size={18} /> Sair
           </Button>
-        </div>
-      </header>
+        }
+      />
 
       <main className="flex-1 px-5 py-10 md:px-10 lg:px-14">
         <div className="mx-auto w-full max-w-[min(96rem,calc(100vw-2.5rem))]">

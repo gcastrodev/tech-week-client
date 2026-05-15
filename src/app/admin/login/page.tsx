@@ -46,13 +46,13 @@ export default function AdminLoginPage() {
     <main className="relative flex min-h-screen items-center justify-center bg-gradient-to-b from-[#070c1a] via-[#101b35] to-[#060910] px-5 py-16 md:px-12 lg:px-16">
       <Button
         variant="ghost"
-        size="sm"
+        size="lg"
         asChild
-        className="absolute top-5 right-5 gap-1.5 text-muted-foreground hover:text-foreground md:top-8 md:right-10 lg:right-14"
+        className="absolute top-5 left-5 gap-2 font-mono text-base text-muted-foreground hover:bg-white/10 hover:text-foreground md:top-8 md:left-10 lg:left-14"
       >
         <Link href="/">
-          <ArrowLeft size={16} />
-          Início
+          <ArrowLeft size={22} strokeWidth={2.25} />
+          Voltar
         </Link>
       </Button>
       <div className="w-full max-w-[min(56rem,calc(100vw-2.5rem))]">

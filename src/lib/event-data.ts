@@ -182,8 +182,8 @@ export const speakerPreview: SpeakerCard[] = [
   {
     name: "Gustavo Melles",
     role: "Palestrante",
-    bio: "Palestrante, professor de Inteligência Artificial no MBA da PUC Paraná, colunista da CBN e criador do movimento Pense com IA.",
-    talkTopic: "Pense com IA: A Revolução da Inteligência Ampliada",
+    bio: "Fundador do BuscaIA.com e OiRobo.com, professor no MBA em Inovação e Inteligência Artificial da PUCPR e colunista na Rádio CBN Londrina.",
+    talkTopic: "Pense com IA: a revolução da inteligência ampliada",
     photoSrc: "/speakers/gustavo-melles.png",
     photoAlt: "Gustavo Melles — palestrante da Tech Week",
     statusBadge: "confirmado",
@@ -207,30 +207,9 @@ export const speakerPreview: SpeakerCard[] = [
     ],
   },
   {
-    name: "Huander Tironi",
-    role: "Palestrante",
-    bio: "Huander Tironi | Head de IA na Bankme, empreendedor e especialista em arquitetura de software. Mestre e doutorando em IA e Segurança da Informação, conecta pesquisa científica e prática de mercado para desenvolver soluções escaláveis de Machine Learning e automação desde 2009.",
-    talkTopic: "Inteligência Artificial Aplicada",
-    photoSrc: "/speakers/huander-tironi.png",
-    photoAlt: "Huander Tironi — palestrante da Tech Week",
-    statusBadge: "confirmado",
-    socials: [
-      {
-        network: "instagram",
-        href: "https://www.instagram.com/coding_tironi/",
-        label: "@coding_tironi",
-      },
-      {
-        network: "linkedin",
-        href: "https://www.linkedin.com/in/huandertironi/",
-        label: "linkedin.com/in/huandertironi",
-      },
-    ],
-  },
-  {
     name: "Jessy Borges Ferracioli",
     role: "Palestrante",
-    bio: "Advogada há mais de 10 anos, atualmente advogo em uma empresa do ramo de licitações públicas. Sou pós-graduada em Direito Civil e Processo Civil, mestre em Direito, Sociedades e Tecnologia, e pesquisadora de direito e inteligência artificial na Lawgorithm, do núcleo IA e Raça.",
+    bio: "Advogada, pesquisadora de direito e inteligência artificial na Lawgorithm, do núcleo IA e Raça.",
     talkTopic:
       "Os data taggers e o trabalho invisível por trás da Inteligência Artificial",
     photoSrc: "/speakers/jessy-borges-ferracioli.png",
@@ -248,5 +227,33 @@ export const speakerPreview: SpeakerCard[] = [
         label: "linkedin.com/in/jessy-borges-ferracioli",
       },
     ],
+  },
+  {
+    name: "Luciano Soler",
+    role: "Palestrante",
+    bio: "Engenheiro da Computação, Mestre em Ciências da Computação e especialista em Engenharia de Software. Atua com desenvolvimento de Software e IA no IAPAR.",
+    talkTopic: "Construção e orquestração de agentes de IA",
+    photoSrc: "/speakers/luciano-soler.png",
+    photoAlt: "Luciano Soler — palestrante da Tech Week",
+    statusBadge: "confirmado",
+  },
+  {
+    name: "Michel Cesar Leme Banaggiuro",
+    role: "Palestrante",
+    bio: "Arquiteto de Software e CTO na Leanwork Group. 20 anos de experiência no desenvolvimento e liderança técnica de grandes e-commerces como Centauro, Ultrafarma e Riachuelo.",
+    talkTopic: "O programador morreu. Vida longa ao programador",
+    photoSrc: "/speakers/michel-cesar-leme-banaggiuro.png",
+    photoAlt: "Michel Cesar Leme Banaggiuro — palestrante da Tech Week",
+    statusBadge: "confirmado",
+  },
+  {
+    name: "Luiz Fernando Pereira Nunes",
+    role: "Palestrante",
+    bio: "Profissional da área de tecnologia com mais de 15 anos de experiência em Gerenciamento de Projetos. Mestre em Ciência da Computação e em Direito e Tecnologia. Líder na Hanke Digital Solutions.",
+    talkTopic:
+      "Inteligência Artificial e proteção de dados: desafios, ética e segurança na era digital",
+    photoSrc: "/speakers/luiz-fernando-pereira-nunes.png",
+    photoAlt: "Luiz Fernando Pereira Nunes — palestrante da Tech Week",
+    statusBadge: "confirmado",
   },
 ]
