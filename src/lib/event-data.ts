@@ -236,6 +236,18 @@ export const speakerPreview: SpeakerCard[] = [
     photoSrc: "/speakers/luciano-soler.png",
     photoAlt: "Luciano Soler — palestrante da Tech Week",
     statusBadge: "confirmado",
+    socials: [
+      {
+        network: "instagram",
+        href: "https://www.instagram.com/lucianosoler/",
+        label: "@lucianosoler",
+      },
+      {
+        network: "linkedin",
+        href: "https://www.linkedin.com/in/luciano-soler-59aa6128/",
+        label: "linkedin.com/in/luciano-soler-59aa6128",
+      },
+    ],
   },
   {
     name: "Michel Cesar Leme Banaggiuro",
@@ -255,5 +267,17 @@ export const speakerPreview: SpeakerCard[] = [
     photoSrc: "/speakers/luiz-fernando-pereira-nunes.png",
     photoAlt: "Luiz Fernando Pereira Nunes — palestrante da Tech Week",
     statusBadge: "confirmado",
+    socials: [
+      {
+        network: "instagram",
+        href: "https://www.instagram.com/lfpnunes/",
+        label: "@lfpnunes",
+      },
+      {
+        network: "linkedin",
+        href: "https://www.linkedin.com/in/luiz-fernando-nunes-msc-391a483a/",
+        label: "linkedin.com/in/luiz-fernando-nunes-msc-391a483a",
+      },
+    ],
   },
 ]
