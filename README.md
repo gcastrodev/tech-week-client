@@ -74,6 +74,7 @@ Detalhe completo em **`CONTRACT.md`**. Resumo:
 
 - `POST /registrations`, `POST /projects`, `POST /checkin`, `POST /admin/login`
 - `GET /registrations`, `GET /projects` — **JWT obrigatório**
+- `DELETE /registrations/{ra}`, `DELETE /checkin/{ra}` — **JWT obrigatório** (admin)
 
 ## Equipa / deploy
 

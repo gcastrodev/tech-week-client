@@ -110,6 +110,45 @@
 
 ---
 
+## DELETE /registrations/{ra} — protected (JWT)
+
+`{ra}` — `student_registration` (9 dígitos).
+
+- `200`
+- `401` `{ "error": "missing_token" }`
+- `401` `{ "error": "invalid_token" }`
+- `404` `{ "error": "ra_not_found" }`
+
+---
+
+## DELETE /checkin/{ra} — protected (JWT)
+
+`{ra}` — `student_registration` (9 dígitos). Desfaz o check-in do participante.
+
+- `200`
+- `401` `{ "error": "missing_token" }`
+- `401` `{ "error": "invalid_token" }`
+- `404` `{ "error": "ra_not_found" }`
+
+---
+
+## Resumo de rotas
+
+| Method | Route | Auth |
+|--------|-------|------|
+| POST | `/registrations` | — |
+| POST | `/projects` | — |
+| POST | `/checkin` | — |
+| POST | `/admin/login` | — |
+| GET | `/registrations` | JWT |
+| GET | `/projects` | JWT |
+| DELETE | `/registrations/{ra}` | JWT |
+| DELETE | `/checkin/{ra}` | JWT |
+
+**Projetos:** não há `PATCH` nem `DELETE` — aprovar/rejeitar no admin exige novo endpoint no backend.
+
+---
+
 ## Notas — diferenças em relação ao `CONTRACT.md` anterior deste repositório
 
 | Área | Antes (repo) | Agora (este documento) |

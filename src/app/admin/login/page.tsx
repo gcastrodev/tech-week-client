@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
 import { adminLogin } from "@/lib/api"
-import { Loader2 } from "lucide-react"
+import { ArrowLeft, Loader2 } from "lucide-react"
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -42,11 +43,22 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-[#070c1a] via-[#101b35] to-[#060910] px-5 py-16 md:px-12 lg:px-16">
+    <main className="relative flex min-h-screen items-center justify-center bg-gradient-to-b from-[#070c1a] via-[#101b35] to-[#060910] px-5 py-16 md:px-12 lg:px-16">
+      <Button
+        variant="ghost"
+        size="sm"
+        asChild
+        className="absolute top-5 right-5 gap-1.5 text-muted-foreground hover:text-foreground md:top-8 md:right-10 lg:right-14"
+      >
+        <Link href="/">
+          <ArrowLeft size={16} />
+          Início
+        </Link>
+      </Button>
       <div className="w-full max-w-[min(56rem,calc(100vw-2.5rem))]">
         <div className="mb-10 flex flex-wrap items-center justify-center gap-3 text-center">
           <span className="rounded bg-neon px-2.5 py-1 font-mono text-xs font-bold text-black">
-            TW
+            UniCesumar
           </span>
           <span className="font-mono text-2xl font-bold text-foreground md:text-3xl">
             Admin — Tech Week

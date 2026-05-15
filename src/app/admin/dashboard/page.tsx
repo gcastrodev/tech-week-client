@@ -128,7 +128,7 @@ export default function AdminDashboardPage() {
       <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-[min(96rem,calc(100vw-2.5rem))] items-center justify-between px-5 md:px-10 lg:px-14">
           <div className="flex items-center gap-2 font-semibold">
-            <span className="bg-brand text-white text-xs font-bold px-2 py-1 rounded">TW</span>
+            <span className="bg-brand text-white text-xs font-bold px-2 py-1 rounded">UniCesumar</span>
             <span>Admin — Tech Week</span>
           </div>
           <Button variant="ghost" size="sm" onClick={logout} className="gap-1.5 text-muted-foreground">
