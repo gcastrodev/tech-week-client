@@ -9,19 +9,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
-import { postRegistration } from "@/lib/api"
+import { submitRegistration } from "@/app/actions/public"
+import { ALLOWED_COURSES } from "@/lib/validation"
 import { digitsOnly, stripDigits } from "@/lib/form-input"
-import type { RegistrationPayload } from "@/lib/types"
 import { Loader2, CheckCircle } from "lucide-react"
-
-const courses = [
-  "Engenharia de Software",
-  "Sistemas de Informação",
-  "Ciência da Computação",
-  "Análise e Desenvolvimento de Sistemas",
-  "Engenharia de Computação",
-  "Outro",
-]
 
 export default function InscricaoPage() {
   const [loading, setLoading] = useState(false)
@@ -56,21 +47,21 @@ export default function InscricaoPage() {
       return
     }
 
-    const payload: RegistrationPayload = {
+    setLoading(true)
+    const result = await submitRegistration({
       name: form.name,
       student_registration: ra,
       course_name: form.course_name,
-      course_period: period,
+      course_period: String(period),
       coffee_break: form.coffee_break,
-    }
+    })
+    setLoading(false)
 
-    setLoading(true)
-    try {
-      await postRegistration(payload)
+    if (result.success) {
       setDone(true)
       toast.success("Inscrição realizada com sucesso!")
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : ""
+    } else {
+      const msg = result.error
       if (msg === "ra_already_registered") {
         toast.error("Este RA já está inscrito.")
       } else if (msg === "invalid_student_registration") {
@@ -84,8 +75,6 @@ export default function InscricaoPage() {
       } else {
         toast.error("Erro ao realizar inscrição. Tente novamente.")
       }
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -154,7 +143,7 @@ export default function InscricaoPage() {
                   required
                 >
                   <option value="">Selecione seu curso</option>
-                  {courses.map((c) => (
+                  {ALLOWED_COURSES.map((c) => (
                     <option key={c} value={c}>
                       {c}
                     </option>

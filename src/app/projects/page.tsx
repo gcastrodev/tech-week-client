@@ -9,9 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
-import { postProject } from "@/lib/api"
+import { submitProject } from "@/app/actions/public"
 import { stripDigits } from "@/lib/form-input"
-import type { ProjectPayload } from "@/lib/types"
 import Link from "next/link"
 import { Loader2, CheckCircle } from "lucide-react"
 
@@ -51,20 +50,20 @@ export default function ProjetosPage() {
       return
     }
 
-    const payload: ProjectPayload = {
+    setLoading(true)
+    const result = await submitProject({
       submitter_name: form.submitter_name,
       submitter_registration: ra,
       project_name: form.project_name,
       description: form.description,
-    }
+    })
+    setLoading(false)
 
-    setLoading(true)
-    try {
-      await postProject(payload)
+    if (result.success) {
       setDone(true)
       toast.success("Projeto submetido! Aguarde a aprovação.")
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : ""
+    } else {
+      const msg = result.error
       if (msg === "invalid_ra") {
         toast.error("RA inválido.")
       } else if (msg === "invalid_submitter_name") {
@@ -81,8 +80,6 @@ export default function ProjetosPage() {
       } else {
         toast.error("Erro ao submeter projeto. Tente novamente.")
       }
-    } finally {
-      setLoading(false)
     }
   }
 

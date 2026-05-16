@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
-import { postCheckin } from "@/lib/api"
+import { submitCheckin } from "@/app/actions/public"
 import { Loader2, CheckCircle } from "lucide-react"
 
 export default function CheckinPage() {
@@ -26,12 +26,14 @@ export default function CheckinPage() {
     }
 
     setLoading(true)
-    try {
-      await postCheckin({ student_registration: digits })
+    const result = await submitCheckin({ student_registration: digits })
+    setLoading(false)
+
+    if (result.success) {
       setDone(true)
       toast.success("Check-in confirmado!")
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : ""
+    } else {
+      const msg = result.error
       if (msg === "ra_not_found") {
         toast.error("RA não encontrado. Você está inscrito?")
       } else if (msg === "invalid_student_registration") {
@@ -39,8 +41,6 @@ export default function CheckinPage() {
       } else {
         toast.error("Erro ao realizar check-in.")
       }
-    } finally {
-      setLoading(false)
     }
   }
 

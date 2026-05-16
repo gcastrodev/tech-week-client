@@ -9,8 +9,8 @@ import { SiteHeader } from "@/components/site-header"
 
 const links = [
   { href: "/", label: "Início" },
-  { href: "/inscricao", label: "Inscreva-se" },
-  { href: "/projetos", label: "Projetos" },
+  { href: "/registrations", label: "Inscreva-se" },
+  { href: "/projects", label: "Projetos" },
   { href: "/checkin", label: "Check-in" },
   { href: "/faq", label: "FAQ" },
 ]

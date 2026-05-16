@@ -370,7 +370,7 @@ export default function HomePage() {
                       size="lg"
                       className="h-auto bg-black px-10 py-6 text-lg font-semibold text-white shadow-lg hover:bg-neutral-900 md:px-12 md:py-7 md:text-xl"
                     >
-                      <Link href="/projetos">
+                      <Link href="/projects">
                         Submeter meu projeto <ChevronRight className="size-5 md:size-6" />
                       </Link>
                     </Button>
@@ -858,7 +858,7 @@ export default function HomePage() {
                   size="lg"
                   className="h-auto border-0 bg-black px-12 py-7 font-mono text-lg font-bold text-[#F3EFEA] shadow-xl hover:bg-neutral-950 md:px-16 md:py-9 md:text-xl"
                 >
-                  <Link href="/inscricao">
+                  <Link href="/registrations">
                     inscrever-se agora <ChevronRight className="size-5 md:size-6" />
                   </Link>
                 </Button>

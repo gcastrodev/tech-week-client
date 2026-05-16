@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
-import { adminLogin } from "@/lib/api"
+import { loginAdmin } from "@/app/actions/admin"
 import { ArrowLeft, Loader2 } from "lucide-react"
 
 export default function AdminLoginPage() {
@@ -25,20 +25,17 @@ export default function AdminLoginPage() {
     }
 
     setLoading(true)
-    try {
-      const res = await adminLogin({ email, password })
-      localStorage.setItem("admin_token", res.token)
+    const result = await loginAdmin(email, password)
+    setLoading(false)
+
+    if (result.success) {
       toast.success("Login realizado!")
       router.push("/admin/dashboard")
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : ""
-      if (msg === "invalid_credentials") {
-        toast.error("E-mail ou senha incorretos.")
-      } else {
-        toast.error("Erro ao fazer login.")
-      }
-    } finally {
-      setLoading(false)
+      router.refresh()
+    } else if (result.error === "invalid_credentials") {
+      toast.error("E-mail ou senha incorretos.")
+    } else {
+      toast.error("Erro ao fazer login.")
     }
   }
 

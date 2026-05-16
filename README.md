@@ -7,15 +7,15 @@ Repositório **apenas do frontend** do sistema Tech Week da UniCesumar Londrina.
 - **Next.js 16** (App Router), **TypeScript**, **Tailwind CSS 4**, **shadcn/ui**
 - Animações: **motion**, scroll suave (**Lenis**), efeitos em canvas 2D; **Three.js** via **React Three Fiber** onde usado
 - Dados estáticos do evento (agenda, patrocinadores, textos da home): `src/lib/event-data.ts`
-- Integração HTTP: `src/lib/api.ts` → ver **`CONTRACT.md`** para payloads, códigos HTTP e erros (`error`)
+- Integração HTTP no **servidor** (Server Actions + `src/lib/api-server.ts`) → ver **`CONTRACT.md`** para payloads, códigos HTTP e erros (`error`)
 
 ## Funcionalidades
 
 - Homepage com hero, secções do evento e efeitos visuais
-- **`/inscricao`** — inscrição de participantes (`POST /registrations`)
-- **`/projetos`** — submissão de projetos (`POST /projects`)
-- **`/checkin`** — check-in por RA (`POST /checkin`)
-- **`/admin/login`** + **`/admin/dashboard`** — JWT em `localStorage` (`admin_token`); listagens `GET /registrations` e `GET /projects` com `Authorization: Bearer`
+- **`/registrations`** — inscrição de participantes (`POST /registrations` via Server Action)
+- **`/projects`** — submissão de projetos (`POST /projects` via Server Action)
+- **`/checkin`** — check-in por RA (`POST /checkin` via Server Action)
+- **`/admin/login`** + **`/admin/dashboard`** — JWT em cookie **httpOnly**; listagens carregadas no servidor com `Authorization: Bearer`
 - **`/faq`** — perguntas frequentes
 
 ## Estrutura útil
@@ -23,9 +23,11 @@ Repositório **apenas do frontend** do sistema Tech Week da UniCesumar Londrina.
 | Caminho | Descrição |
 |--------|-----------|
 | `src/app/` | Rotas e páginas (App Router) |
+| `src/app/actions/` | Server Actions (formulários públicos e admin) |
 | `src/components/` | Componentes partilhados (fora de `ui/`) |
 | `src/components/ui/` | shadcn/ui — **não editar à mão** |
-| `src/lib/api.ts` | Cliente `fetch` para o backend |
+| `src/lib/api-server.ts` | Cliente `fetch` para o backend (só no servidor) |
+| `src/lib/validation.ts` | Validação server-side dos formulários |
 | `src/lib/types.ts` | Tipos alinhados ao `CONTRACT.md` |
 | `src/lib/event-data.ts` | Conteúdo editorial do site (agenda, patrocinadores, datas) |
 | `CONTRACT.md` | Contrato oficial da API com o frontend |
@@ -34,7 +36,7 @@ Repositório **apenas do frontend** do sistema Tech Week da UniCesumar Londrina.
 
 - **Node.js 20+**
 - **npm**
-- API acessível na URL configurada em **`NEXT_PUBLIC_API_URL`**, com **CORS** permitindo a origem do Next (ver comentário no topo de `src/lib/api.ts`)
+- API acessível na URL configurada em **`API_URL`** (recomendado) ou **`NEXT_PUBLIC_API_URL`**
 
 ## Uso local
 
@@ -50,22 +52,25 @@ Abrir `http://localhost:3000` (porta padrão do Next).
 Crie `.env.local` (não commitar segredos):
 
 ```bash
-# URL base da API (sem barra final). Use uma porta diferente da do Next se ambos correrem na mesma máquina.
+
+API_URL=http://127.0.0.1:8080
+
+
 NEXT_PUBLIC_API_URL=http://127.0.0.1:8080
 ```
 
-O fallback em código é `http://localhost:3000`; se o Next também usar a porta **3000**, defina sempre `NEXT_PUBLIC_API_URL` para a porta real do backend.
+Use uma porta diferente da do Next se ambos correrem na mesma máquina. O fallback em código é `http://localhost:3000`.
 
 ## Rotas
 
 | Rota | Função |
 |------|--------|
 | `/` | Homepage |
-| `/inscricao` | Inscrição |
-| `/projetos` | Submissão de projetos |
+| `/registrations` | Inscrição |
+| `/projects` | Submissão de projetos |
 | `/checkin` | Check-in |
 | `/admin/login` | Login admin |
-| `/admin/dashboard` | Painel (requer token) |
+| `/admin/dashboard` | Painel (requer sessão) |
 | `/faq` | FAQ |
 
 ## API (resumo)
@@ -79,7 +84,7 @@ Detalhe completo em **`CONTRACT.md`**. Resumo:
 ## Equipa / deploy
 
 - Backend: repositório separado (https://github.com/guilhermegouve4/tech-week-api).
-- **Vercel (ou similar):** definir `NEXT_PUBLIC_API_URL` nas variáveis de ambiente; build `npm run build`, start `npm run start`.
+- **Vercel (ou similar):** definir `API_URL` (e opcionalmente `NEXT_PUBLIC_API_URL`) nas variáveis de ambiente; build `npm run build`, start `npm run start`.
 
 ## Observações para contribuintes
 
