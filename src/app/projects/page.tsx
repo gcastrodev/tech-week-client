@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
 import { postProject } from "@/lib/api"
+import { stripDigits } from "@/lib/form-input"
 import type { ProjectPayload } from "@/lib/types"
 import Link from "next/link"
 import { Loader2, CheckCircle } from "lucide-react"
@@ -114,7 +115,7 @@ export default function ProjetosPage() {
             <p className="rounded-xl border border-border/80 bg-muted/40 px-4 py-3 text-sm md:text-base">
               <strong className="font-semibold text-foreground">Inscrição obrigatória:</strong> só é
               possível submeter projeto com um RA já{" "}
-              <Link href="/inscricao" className="text-neon underline underline-offset-2 hover:opacity-90">
+              <Link href="/registrations" className="text-neon underline underline-offset-2 hover:opacity-90">
                 inscrito no evento
               </Link>
               . Os projetos passam por aprovação da coordenação antes de serem confirmados.
@@ -135,7 +136,7 @@ export default function ProjetosPage() {
                   id="submitter_name"
                   placeholder="Nome do aluno responsável"
                   value={form.submitter_name}
-                  onChange={(e) => set("submitter_name", e.target.value)}
+                  onChange={(e) => set("submitter_name", stripDigits(e.target.value))}
                   maxLength={255}
                   required
                 />

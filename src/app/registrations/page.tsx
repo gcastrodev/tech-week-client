@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
 import { postRegistration } from "@/lib/api"
+import { digitsOnly, stripDigits } from "@/lib/form-input"
 import type { RegistrationPayload } from "@/lib/types"
 import { Loader2, CheckCircle } from "lucide-react"
 
@@ -123,7 +124,7 @@ export default function InscricaoPage() {
                   id="name"
                   placeholder="Seu nome"
                   value={form.name}
-                  onChange={(e) => set("name", e.target.value)}
+                  onChange={(e) => set("name", stripDigits(e.target.value))}
                   maxLength={255}
                   required
                 />
@@ -165,12 +166,10 @@ export default function InscricaoPage() {
                 <Label htmlFor="period">Período *</Label>
                 <Input
                   id="period"
-                  type="number"
-                  min={1}
-                  max={12}
                   placeholder="Ex: 4"
                   value={form.course_period}
-                  onChange={(e) => set("course_period", e.target.value)}
+                  onChange={(e) => set("course_period", digitsOnly(e.target.value, 2))}
+                  inputMode="numeric"
                   required
                 />
               </div>

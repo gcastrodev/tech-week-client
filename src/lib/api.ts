@@ -1,7 +1,3 @@
-// O backend Rust/Axum precisa de middleware CORS configurado.
-// Adicionar tower_http::cors::CorsLayer no main.rs do backend.
-// Sem isso, todas as requests vão falhar no browser com CORS error.
-
 import type {
   RegistrationPayload,
   Registration,
