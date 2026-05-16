@@ -394,7 +394,7 @@ export default function HomePage() {
                 <div className="mt-14 grid max-w-xl grid-cols-3 gap-6 border-t border-slate-300/80 pt-10 md:gap-10">
                   <div>
                     <p className="font-mono text-3xl font-bold text-slate-900 md:text-4xl">
-                      5+
+                      5
                     </p>
                     <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-slate-600 md:text-xs">
                       palestrantes
@@ -688,9 +688,10 @@ export default function HomePage() {
                 </h2>
               </div>
               <p className="mb-12 max-w-3xl font-mono text-sm leading-relaxed text-muted-foreground md:text-base">
-                Três dias de evento · cada dia com início e encerramento em{" "}
-                <span className="text-foreground/90">{EVENT.time.label}</span>
-                . Horários internos e palestras serão divulgados em seguida.
+                {EVENT.dates.labelLong} · palestras das{" "}
+                <span className="text-foreground/90">{EVENT.time.start}</span> às{" "}
+                <span className="text-foreground/90">{EVENT.time.end}</span>
+                {", com credenciamento às 18:30 no primeiro dia."}
               </p>
 
               <div className="grid gap-8 md:grid-cols-3 md:gap-10">
@@ -731,9 +732,21 @@ export default function HomePage() {
                           }}
                           className="flex flex-col gap-2 rounded-xl border border-border bg-muted/45 px-4 py-4 transition-colors md:px-5 md:py-5"
                         >
-                          <span className="text-base font-medium leading-snug md:text-lg">
-                            {item.title}
-                          </span>
+                          <div className="flex gap-3">
+                            <span className="shrink-0 font-mono text-sm font-semibold tabular-nums text-cyan-300 md:text-base">
+                              {item.time}
+                            </span>
+                            <div className="min-w-0 flex-1 space-y-1">
+                              <span className="block text-base font-medium leading-snug md:text-lg">
+                                {item.title}
+                              </span>
+                              {item.speaker ? (
+                                <span className="block text-sm text-muted-foreground">
+                                  {item.speaker}
+                                </span>
+                              ) : null}
+                            </div>
+                          </div>
                           <span
                             className={`w-fit rounded-md border px-2.5 py-1 font-mono text-xs ${typeStyle[item.type]}`}
                           >

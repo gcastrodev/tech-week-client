@@ -35,7 +35,9 @@ export const ASSETS = {
 export type ScheduleType = "geral" | "palestra" | "coffee"
 
 export type ScheduleBlock = {
+  time: string
   title: string
+  speaker?: string
   type: ScheduleType
 }
 
@@ -48,21 +50,30 @@ export type DaySchedule = {
   blocks: ScheduleBlock[]
 }
 
-/** Três dias · apenas intervalo diário; conteúdo por dia conforme programação oficial. */
+/** Programação oficial — II Tech Week (flyer do evento). */
 export const scheduleByDay: DaySchedule[] = [
   {
     id: "jun1",
     dateLabel: "01/06",
     weekday: "Segunda-feira",
-    dayRange: "19:00 – 22:00",
+    dayRange: "18:30 – 22:00",
     blocks: [
-      { title: "Abertura oficial do evento", type: "geral" },
-      { title: "Networking", type: "geral" },
+      { time: "18:30", title: "Credenciamento", type: "geral" },
+      { time: "19:00", title: "Abertura do evento", type: "geral" },
       {
-        title: "Apresentação dos projetos dos alunos — tema Inteligência Artificial",
+        time: "19:15",
+        title: "Pense com IA: a revolução da inteligência ampliada",
+        speaker: "Gustavo Melles",
         type: "palestra",
       },
-      { title: "Coffee break", type: "coffee" },
+      {
+        time: "20:30",
+        title:
+          "Os data taggers e o trabalho invisível por trás da Inteligência Artificial",
+        speaker: "Jessy Borges Ferracioli",
+        type: "palestra",
+      },
+      { time: "21:45", title: "Sorteio", type: "geral" },
     ],
   },
   {
@@ -71,13 +82,20 @@ export const scheduleByDay: DaySchedule[] = [
     weekday: "Terça-feira",
     dayRange: "19:00 – 22:00",
     blocks: [
-      { title: "Networking", type: "geral" },
+      { time: "19:00", title: "Abertura do evento", type: "geral" },
       {
-        title:
-          "Palestras com profissionais e empresários do meio tecnológico — programação detalhada em breve",
+        time: "19:15",
+        title: "Construção e orquestração de agentes de IA",
+        speaker: "Luciano Soler",
         type: "palestra",
       },
-      { title: "Coffee break", type: "coffee" },
+      {
+        time: "20:30",
+        title: "O programador morreu. Vida longa ao programador",
+        speaker: "Michel Cesar Leme Banaggiuro",
+        type: "palestra",
+      },
+      { time: "21:45", title: "Sorteio", type: "geral" },
     ],
   },
   {
@@ -86,13 +104,15 @@ export const scheduleByDay: DaySchedule[] = [
     weekday: "Quarta-feira",
     dayRange: "19:00 – 22:00",
     blocks: [
-      { title: "Networking", type: "geral" },
+      { time: "19:00", title: "Abertura do evento", type: "geral" },
       {
+        time: "19:15",
         title:
-          "Palestras com profissionais e empresários do meio tecnológico — programação detalhada em breve",
+          "Inteligência Artificial e proteção de dados: desafios, ética e segurança na era digital",
+        speaker: "Luiz Fernando Pereira Nunes",
         type: "palestra",
       },
-      { title: "Coffee break", type: "coffee" },
+      { time: "20:30", title: "Mostra de trabalhos", type: "geral" },
     ],
   },
 ]
